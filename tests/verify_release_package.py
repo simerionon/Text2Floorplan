@@ -93,6 +93,8 @@ def verify(path):
                 ROOT / f"revit/Text2Revit.Addin/bin/Release/{year}/Text2Revit.Addin.dll").read_bytes()
         for name in ("LICENSE", "THIRD_PARTY_NOTICES.md"):
             assert package.read(name) == (ROOT / name).read_bytes()
+        for name in ("guide.md", "guide.zh.md"):
+            assert package.read(name) == (ROOT / "revit" / name).read_bytes(), name
         assert json.loads(package.read("backend/data/geometry_policy.json"))["minimum_room_areas_m2"] == {
             "kitchen": 2.0, "bathroom": 2.0}
     return {"version": manifest["version"], "size_bytes": path.stat().st_size,

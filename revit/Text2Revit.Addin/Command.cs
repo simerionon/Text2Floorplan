@@ -30,12 +30,12 @@ namespace Text2Revit.Addin
                     boxes.Min(b=>b.Min.Y)-UnitConverter.PixelsToFeet(points.Min(p=>p[1]),plan.PixelToMeter),0);
                 var created=new List<ElementId>();
                 View3D modelView=null;
-                using(var group=new TransactionGroup(doc,UiLanguage.Text("Text2Revit Generate Model","Text2Revit 生成模型")))
+                using(var group=new TransactionGroup(doc,UiLanguage.Text("Text2Floorplan Generate Model","Text2Floorplan 生成模型")))
                 {
                 group.Start();
                 // Family loading and construction are combined into one undo operation.
                 var symbols=new FamilyLibrary(doc, data.Application.Application).Prepare(plan.Openings);
-                using (var transaction=new Transaction(doc,UiLanguage.Text("Text2Revit Generate Model","Text2Revit 生成模型")))
+                using (var transaction=new Transaction(doc,UiLanguage.Text("Text2Floorplan Generate Model","Text2Floorplan 生成模型")))
                 {
                     transaction.Start();
                     var hosts=new WallBuilder(doc,view.GenLevel,plan.PixelToMeter,offset).Build(plan);

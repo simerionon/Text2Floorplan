@@ -1,23 +1,40 @@
-# Text2Revit
+# Text2Floorplan
 
 [中文](README.zh.md)
 
-**Generate apartment layouts from text and turn them into editable Revit models.**
+**Generate apartment layouts from text, edit them in 2D and 3D, or build native Revit models.**
 
-Text2Revit uses a conditional Flow Matching model to generate room layouts from a supported English prompt. A Python pipeline refines the geometry and places openings, then a C# add-in builds the result as native Autodesk Revit elements. The repository includes data preparation, model training, inference and the Revit integration.
+Text2Floorplan uses conditional Flow Matching to generate apartment layouts from supported English prompts. Its local browser editor connects an editable 2D plan with a 3D model. An optional C# integration, Text2Floorplan Revit, creates native Autodesk Revit elements from the generated geometry. The repository includes data preparation, training, inference and both interfaces.
 
-## Example
+## Examples
 
 ```text
 A large 3-bedroom apartment with 2 bathrooms and 2 balconies.
 ```
 
-The images below show the same generated apartment in Revit 2022: **3 bedrooms, 2 bathrooms, 2 balconies and 106.2 m² total floor area**, including balconies.
+### Browser editor
 
-![Generated floor plan with room and total areas](sample/floorplan.png)
-![Matching editable Revit 3D model](sample/model3d.png)
+The images below show the same calibrated apartment in the local editor: **3 bedrooms, 2 bathrooms, 2 balconies and 128.9 m² net floor area**, including balconies.
 
-The [sample](sample/README.md) includes the generated JSON and native Revit measurements.
+| 2D floor plan | Linked 3D model |
+| --- | --- |
+| ![Browser floor plan with room areas](sample/floorplan.png) | ![Browser 3D model](sample/model3d.png) |
+
+The [sample](sample/README.md) includes the editable JSON, current calibration and matching area records.
+
+### Revit plug-in
+
+Native **Revit 2022** floor plan and 3D exports, with walls, hosted door/window
+families, open balcony railings and area labels. This retained native example
+uses the earlier **106.2 m²** calibration.
+
+| Native Revit floor plan | Native Revit 3D model |
+| --- | --- |
+| ![Native Revit floor plan](sample/revit-floorplan.png) | ![Native Revit 3D model](sample/revit-model3d.png) |
+
+The matching input and measured areas are preserved as
+[`revit-plan.json`](sample/revit-plan.json) and
+[`revit-metadata.json`](sample/revit-metadata.json).
 
 ## What it generates
 
@@ -28,10 +45,54 @@ The [sample](sample/README.md) includes the generated JSON and native Revit meas
 
 Window placement avoids the continuous exterior wall containing the entrance. Bedrooms with balcony access receive a balcony door without an additional window. Narrow geometry is repaired before door and window placement, and opening positions are checked for spacing. See the [user guide](revit/guide.md) for dimensions and the [validation report](docs/audit.md) for the checks and their limits.
 
+## Use the browser edition
+
+The **Windows browser edition** runs locally and includes Python, PyTorch, CLIP
+and the trained model. It requires neither Revit nor a separate Python/Conda
+installation. Inference supports CPU and compatible NVIDIA GPUs; after downloading
+the package, generation works offline.
+
+1. From [Releases](https://github.com/Simon777hh/text2floorplan/releases), download
+   `Text2Floorplan-Web-Windows.zip` and **every** `Text2Floorplan-Web-Data-*.zip`
+   into the same folder.
+2. Extract only the main ZIP. Leave the data ZIPs in the download folder and
+   double-click **`Start-Text2Floorplan.cmd`** in the extracted `Text2Floorplan` folder.
+3. First launch verifies and prepares the runtime, then opens your browser.
+   Enter a prompt and click **Generate layout**, or select **Import sample**
+   to explore editing immediately. Keep the console open while working.
+
+A complete offline ZIP contains the same files in one download when supplied
+through a separate download link. This application uses a local backend; opening
+`index.html` directly does not run the model. The interface starts blank, defaults
+to English and offers Chinese in the language menu.
+
+### Browser editing
+
+- Synchronized 2D and 3D views, plan pan/zoom, orbit and top view.
+- Independent wall endpoint editing and whole-segment movement, with node,
+  intersection and wall-line snapping.
+- Wall height/thickness, door/window size and sill/base-height controls.
+- Door/window transfer between walls with automatic orientation; door swing
+  reversal and hinge-side changes. Invalid placements are rejected atomically.
+- Room and total net-area recalculation, including balconies. Unclosed spaces
+  are explicitly labelled rather than assigned outdated areas.
+- Undo/redo, editable JSON import/export and 3D PNG export.
+
+Save the model JSON before refreshing or closing the page. The browser edition
+saves editable geometry; native Revit construction uses the separate add-in.
+See the [Windows package guide](web_editor/PORTABLE.md) for requirements and
+troubleshooting, or the [editor guide](web_editor/README.md) for detailed controls
+and source startup.
+
 ## Use in Revit
 
-1. Download `Text2Revit-Setup.exe` from the [Windows release](https://github.com/Simon777hh/Text2Revit/releases). Close Revit, run the installer and select **Install**.
-2. Start Revit, open a project floor plan and select **Text2Revit → Generate Model**.
+The **Text2Floorplan Revit edition** is distributed as
+`text2floorplan_revit-Setup.exe`. It is an alternative to the independent browser
+editor. Internal assembly names and existing install locations are retained for
+upgrade compatibility.
+
+1. Download `text2floorplan_revit-Setup.exe` from the [Windows release](https://github.com/Simon777hh/text2floorplan/releases). Close Revit, run the installer and select **Install**.
+2. Start Revit, open a project floor plan and select **Text2Floorplan → Generate Model**.
 3. Enter a supported prompt and select **Generate**. The tool creates the model and opens its 3D view.
 
 The Windows online installer automatically downloads and installs Python, PyTorch, CLIP and the trained model. Only the setup EXE needs to be downloaded manually. Installation requires internet access; subsequent inference runs locally and offline, uses a compatible NVIDIA GPU automatically and supports CPU fallback. No separate Python or Conda installation is required. A complete offline installer can also be distributed separately.
@@ -61,7 +122,7 @@ The installer contains separate add-ins for **Revit 2020–2026** and registers 
 
 ## Run inference from source
 
-The locally verified environment is Windows x64 with Python 3.14 and PyTorch 2.11. Model weights are not included in the source repository. To run inference from source, provide a compatible trained checkpoint at `checkpoints/flow_matching_best.pth`, or pass its path with `--checkpoint`. The Windows installer supplies the weights needed for Revit use automatically.
+The locally verified environment is Windows x64 with Python 3.14 and PyTorch 2.11. Model weights are not included in the source repository. To run inference from source, provide a compatible trained checkpoint at `checkpoints/flow_matching_best.pth`, or pass its path with `--checkpoint`. Both complete Windows distributions supply the model weights automatically.
 
 In a Python environment, run the following from the repository root:
 
@@ -83,7 +144,8 @@ The setup script downloads the CLIP text encoder once. Inference loads `checkpoi
 | `model.py`, `train.py`, `losses.py` | Model architecture and Flow Matching training |
 | `pipeline_generate.py`, `backend_cli.py` | Inference and output generation |
 | `geometry_cleanup.py`, `plan_quality.py`, `door_window_rules.py`, `revit_geometry.py` | Geometry repair, area checks, opening placement and physical dimensions |
-| `revit/` | C# add-in, installer and release builder |
+| `web_editor/` | Local browser UI, editable 2D/3D document, portable launcher and release builder |
+| `revit/` | Optional C# add-in, installer and Revit release builder |
 | `sample/`, `tests/`, `docs/` | Examples, regression checks and documentation |
 
 Training datasets are obtained separately. The [data pipeline](docs/data_pipeline.md) describes preparation and validation; the [development guide](docs/development.md) covers the C# implementation, installer builds and verification commands. The [validation report](docs/audit.md) records tested behavior and remaining limitations.
@@ -104,6 +166,6 @@ CLIP embeddings, then validates their alignment.
 
 Copyright (c) 2026 Simon H.
 
-Text2Revit is available under the [Source-Available Evaluation License](LICENSE). You may clone, study and privately run or modify it for noncommercial evaluation. Commercial use, substantial reuse in other projects and redistribution beyond the license's permissions require prior written permission.
+Original project material is released under the [MIT License](LICENSE). You may use, modify, distribute and use it commercially, provided the copyright and license notice are retained. Third-party components, pretrained model components and separately obtained datasets remain subject to their own terms.
 
 Third-party components and datasets retain their own terms. See [third-party notices](THIRD_PARTY_NOTICES.md).

@@ -17,7 +17,7 @@ namespace Text2Revit.Addin.UI
     {
         public static PlanData Generate(IntPtr owner)
         {
-            using (var form = new Form { Text=UiLanguage.Text("Text2Revit · Generate apartment model","Text2Revit · 生成户型模型"), ClientSize=new Size(720,430),
+            using (var form = new Form { Text=UiLanguage.Text("Text2Floorplan Revit · Generate apartment model","Text2Floorplan Revit · 生成户型模型"), ClientSize=new Size(720,430),
                 StartPosition=FormStartPosition.CenterParent, FormBorderStyle=FormBorderStyle.FixedDialog,
                 MaximizeBox=false, MinimizeBox=false, Font=new Font("Segoe UI",10), AutoScaleMode=AutoScaleMode.Dpi })
             using (var cancellation = new CancellationTokenSource())
@@ -40,7 +40,7 @@ namespace Text2Revit.Addin.UI
                 var cancel = new Button { Left=598,Top=365,Width=98,Height=36,Text=UiLanguage.Text("Close","关闭") };
                 form.Controls.AddRange(new Control[] { title,language,input,hint,examples,status,progress,generate,cancel });
                 PlanData plan=null; bool running=false; PythonBackendRunner runner=null;
-                language.SelectedIndexChanged+=(s,e)=>{UiLanguage.Set(language.SelectedIndex==1);form.Text=UiLanguage.Text("Text2Revit · Generate apartment model","Text2Revit · 生成户型模型");title.Text=UiLanguage.Text("Describe your apartment","描述你想生成的户型");hint.Text=Hint();status.Text=Ready();generate.Text=UiLanguage.Text("Generate","生成");cancel.Text=UiLanguage.Text("Close","关闭");};
+                language.SelectedIndexChanged+=(s,e)=>{UiLanguage.Set(language.SelectedIndex==1);form.Text=UiLanguage.Text("Text2Floorplan Revit · Generate apartment model","Text2Floorplan Revit · 生成户型模型");title.Text=UiLanguage.Text("Describe your apartment","描述你想生成的户型");hint.Text=Hint();status.Text=Ready();generate.Text=UiLanguage.Text("Generate","生成");cancel.Text=UiLanguage.Text("Close","关闭");};
                 cancel.Click += (s,e) => { if (running) { cancellation.Cancel(); cancel.Enabled=false; status.Text=UiLanguage.Text("Stopping…","正在停止…"); } else form.Close(); };
                 form.FormClosing += (s,e) => { if (running) { e.Cancel=true; cancellation.Cancel(); status.Text=UiLanguage.Text("Stopping…","正在停止…"); } };
                 timer.Tick += (s,e) => {

@@ -75,10 +75,10 @@ namespace Text2Revit.Installer
 #else
                 bool uninstall=args.Contains("--uninstall") || string.Equals(Path.GetFileNameWithoutExtension(Application.ExecutablePath),"Uninstall",StringComparison.OrdinalIgnoreCase);
 #endif
-                using (var form=new Form { Text=uninstall ? UiLanguage.Text("Uninstall Text2Revit","卸载 Text2Revit") : UiLanguage.Text("Install Text2Revit","安装 Text2Revit"),ClientSize=new Size(600,300),StartPosition=FormStartPosition.CenterScreen,
+                using (var form=new Form { Text=uninstall ? UiLanguage.Text("Uninstall Text2Floorplan Revit","卸载 Text2Floorplan Revit") : UiLanguage.Text("Install Text2Floorplan Revit","安装 Text2Floorplan Revit"),ClientSize=new Size(600,300),StartPosition=FormStartPosition.CenterScreen,
                     FormBorderStyle=FormBorderStyle.FixedDialog,MaximizeBox=false,Font=new Font("Segoe UI",10) })
                 {
-                    var heading=new Label { Left=24,Top=24,Width=405,Height=38,Text=uninstall ? UiLanguage.Text("Uninstall Text2Revit","卸载 Text2Revit") : UiLanguage.Text("Text2Revit · Setup","Text2Revit · 自动安装"),Font=new Font(form.Font.FontFamily,17,FontStyle.Bold) };
+                    var heading=new Label { Left=24,Top=24,Width=405,Height=38,Text=uninstall ? UiLanguage.Text("Uninstall Text2Floorplan Revit","卸载 Text2Floorplan Revit") : UiLanguage.Text("Text2Floorplan Revit · Setup","Text2Floorplan Revit · 自动安装"),Font=new Font(form.Font.FontFamily,17,FontStyle.Bold) };
                     var language=new ComboBox { Left=446,Top=31,Width=130,DropDownStyle=ComboBoxStyle.DropDownList };
                     language.Items.AddRange(new object[]{"English","中文"});language.SelectedIndex=UiLanguage.IsChinese?1:0;
                     bool online=false;
@@ -92,7 +92,7 @@ namespace Text2Revit.Installer
                     CancellationTokenSource cancellation=null;
                     Action requestCancel=()=>{ if(cancellation!=null && !cancellation.IsCancellationRequested) { cancellation.Cancel();cancel.Enabled=false;label.Text=UiLanguage.Text("Cancelling and cleaning up…","正在取消并清理未完成的安装…"); } };
                     cancel.Click+=(s,e)=>{ if(busy) requestCancel();else form.Close(); };
-                    language.SelectedIndexChanged+=(s,e)=>{UiLanguage.Set(language.SelectedIndex==1);cancel.Text=UiLanguage.Text("Cancel","取消");form.Text=uninstall ? UiLanguage.Text("Uninstall Text2Revit","卸载 Text2Revit") : UiLanguage.Text("Install Text2Revit","安装 Text2Revit");heading.Text=uninstall ? UiLanguage.Text("Uninstall Text2Revit","卸载 Text2Revit") : UiLanguage.Text("Text2Revit · Setup","Text2Revit · 自动安装");label.Text=introduction();button.Text=uninstall ? UiLanguage.Text("Uninstall","卸载") : UiLanguage.Text("Install","安装");};
+                    language.SelectedIndexChanged+=(s,e)=>{UiLanguage.Set(language.SelectedIndex==1);cancel.Text=UiLanguage.Text("Cancel","取消");form.Text=uninstall ? UiLanguage.Text("Uninstall Text2Floorplan Revit","卸载 Text2Floorplan Revit") : UiLanguage.Text("Install Text2Floorplan Revit","安装 Text2Floorplan Revit");heading.Text=uninstall ? UiLanguage.Text("Uninstall Text2Floorplan Revit","卸载 Text2Floorplan Revit") : UiLanguage.Text("Text2Floorplan Revit · Setup","Text2Floorplan Revit · 自动安装");label.Text=introduction();button.Text=uninstall ? UiLanguage.Text("Uninstall","卸载") : UiLanguage.Text("Install","安装");};
                     form.FormClosing+=(s,e)=>{ if (busy) { e.Cancel=true;if(!uninstall) requestCancel(); } };
                     button.Click+=async (s,e)=>{
                         if (finished) { form.Close();return; }
@@ -102,7 +102,7 @@ namespace Text2Revit.Installer
                         try
                         {
                             await Task.Run(()=>{ if (uninstall) Uninstall(update); else Install(update,true,cancellation.Token); });
-                            label.Text=uninstall ? UiLanguage.Text("Uninstall complete. Generation records have been kept.","卸载完成。生成记录已保留。") : UiLanguage.Text("Installation complete.\nStart Revit and open a floor plan view.\nClick Generate Model on the Text2Revit tab and enter your prompt.","安装完成。\n启动 Revit，打开楼层平面视图。\n在 Text2Revit 选项卡中点击“生成模型”，输入 prompt 后即可生成三维模型。");
+                            label.Text=uninstall ? UiLanguage.Text("Uninstall complete. Generation records have been kept.","卸载完成。生成记录已保留。") : UiLanguage.Text("Installation complete.\nStart Revit and open a floor plan view.\nClick Generate Model on the Text2Floorplan tab and enter your prompt.","安装完成。\n启动 Revit，打开楼层平面视图。\n在 Text2Floorplan 选项卡中点击“生成模型”，输入 prompt 后即可生成三维模型。");
                             button.Text=UiLanguage.Text("Finish","完成");finished=true;
                         }
                         catch (OperationCanceledException) { label.Text=UiLanguage.Text("Installation cancelled. Incomplete installation files were removed. Downloaded data is kept for retry.","安装已取消。未完成的安装文件已清理，下载缓存保留供重试。");button.Text=UiLanguage.Text("Close","关闭");finished=true; }
@@ -112,7 +112,7 @@ namespace Text2Revit.Installer
                     Application.Run(form);
                 }
             }
-            catch (Exception error) { File.WriteAllText(Path.Combine(Path.GetTempPath(),"Text2Revit-setup-error.txt"),error.ToString());Console.Error.WriteLine(error.Message);Environment.ExitCode=1; if (!args.Any(a=>a.StartsWith("--"))) MessageBox.Show(error.Message,UiLanguage.Text("Text2Revit Setup Failed","Text2Revit 安装失败")); }
+            catch (Exception error) { try { File.WriteAllText(Path.Combine(Path.GetTempPath(),"text2floorplan_revit-setup-error.txt"),error.ToString()); } catch(IOException) { } catch(UnauthorizedAccessException) { }Console.Error.WriteLine(error.Message);Environment.ExitCode=1; if (!args.Any(a=>a.StartsWith("--"))) MessageBox.Show(error.Message,UiLanguage.Text("Text2Floorplan Revit Setup Failed","Text2Floorplan Revit 安装失败")); }
         }
         static void Install(Action<string> update,bool register,CancellationToken token=default(CancellationToken))
         {
@@ -155,9 +155,9 @@ namespace Text2Revit.Installer
                             string folder=Path.Combine(Addins,year.ToString());Directory.CreateDirectory(folder);
                             string path=Path.Combine(folder,"Text2Revit.addin");backups[path]=File.Exists(path) ? File.ReadAllBytes(path) : null;
                             var xml=new XDocument(new XElement("RevitAddIns",new XElement("AddIn",new XAttribute("Type","Application"),
-                                new XElement("Name","Text2Revit"),new XElement("Assembly",Path.Combine(destination,"addin",year.ToString(),"Text2Revit.Addin.dll")),
+                                new XElement("Name","Text2Floorplan Revit"),new XElement("Assembly",Path.Combine(destination,"addin",year.ToString(),"Text2Revit.Addin.dll")),
                                 new XElement("AddInId","58D0137C-7A55-4A1B-9375-5B4D947A4A4E"),new XElement("FullClassName","Text2Revit.Addin.App"),
-                                new XElement("VendorId","T2R"),new XElement("VendorDescription","Text2Revit floorplan generation"))));
+                                new XElement("VendorId","T2R"),new XElement("VendorDescription","Text2Floorplan Revit integration"))));
                             xml.Save(path);
                         }
                     if (register)
@@ -166,8 +166,8 @@ namespace Text2Revit.Installer
                         CopyStub(Path.Combine(Root,"Uninstall.exe"));
                         using (var key=Registry.CurrentUser.CreateSubKey(RegistryPath))
                         {
-                            key.SetValue("DisplayName","Text2Revit");key.SetValue("DisplayVersion",release.Version);
-                            key.SetValue("Publisher","Text2Revit");key.SetValue("InstallLocation",Root);
+                            key.SetValue("DisplayName","Text2Floorplan Revit");key.SetValue("DisplayVersion",release.Version);
+                            key.SetValue("Publisher","Simon H.");key.SetValue("InstallLocation",Root);
                             key.SetValue("UninstallString",Quote(Path.Combine(Root,"Uninstall.exe"))+" --uninstall");
                             key.SetValue("NoModify",1);key.SetValue("NoRepair",1);
                         }
@@ -303,7 +303,7 @@ namespace Text2Revit.Installer
                 if(offset<part.Size)
                 {
                     var request=(HttpWebRequest)WebRequest.Create(part.Url);
-                    request.Timeout=60000;request.ReadWriteTimeout=120000;request.UserAgent="Text2Revit-Setup/1.0";
+                    request.Timeout=60000;request.ReadWriteTimeout=120000;request.UserAgent="Text2Floorplan-Revit-Setup/1.1";
                     if(Testing && request.RequestUri.IsLoopback) request.Proxy=null;
                     if(offset>0) request.AddRange(offset);
                     using(token.Register(request.Abort))

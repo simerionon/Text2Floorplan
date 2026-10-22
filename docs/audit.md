@@ -5,8 +5,115 @@ contains local assets and preserved historical work and is not the upload root.
 Public release download verification: 2026-10-03.
 ResPlan source pipeline consolidation: 2026-10-03.
 RPLAN and feature pipeline consolidation: 2026-10-03.
+Local browser editor verification: 2026-10-19.
+Windows release refresh and MIT licensing: 2026-10-23.
+
+## Windows release refresh — 2026-10-23
+
+- Repository/browser branding is Text2Floorplan; the native integration is
+  Text2Floorplan Revit. Public README files retain both pairs of browser and
+  native Revit illustrations, with each sample's own scale and provenance.
+- Original project material now uses the standard MIT License, copyright 2026
+  Simon H.; no evaluation-only restriction remains in the current license.
+- The Windows browser release bundles Python, PyTorch, CLIP and inference-only
+  Flow weights. It supplies a complete offline ZIP and a main ZIP plus four
+  independent data ZIPs. Data hashes and paths are checked before extraction.
+- A freshly extracted runtime passed dependency checks and real GPU and CPU
+  generation. The real CMD entry prepared the environment and opened localhost.
+  Browser editing, legacy Revit JSON import and inference use the same backend.
+- All Revit 2020–2026 targets were rebuilt with the new display name. The setup
+  and uninstaller use separate build outputs, preventing either from cleaning
+  the other's executable. Setup error logging no longer masks the original
+  exception when a log file cannot be written.
+- Ten installer extraction/download checks passed. The renamed uninstaller was
+  run twice in an isolated test root; generated jobs, family data, preferences
+  and unrelated registrations were retained.
+- The new online setup targets the `v1.1.0` release under
+  `Simon777hh/text2floorplan`. Source/payload hashes, version-specific DLLs,
+  models and numbered download data were checked. Native model construction
+  was historically verified in Revit 2022; the renamed build has not been
+  re-run inside every Revit version. A clean external-PC trial and the new
+  public download URLs remain pending publication.
 
 ## Fixed
+
+* Mixed T junctions now retain the corner join between their two exterior
+  walls. Previously, every three-way node skipped corner construction. Corner
+  additions are clipped against existing wall bodies; wall centerlines and
+  opening positions remain unchanged. Normal thickness steps remain intentional.
+  The actual edited model and minimized mixed/straight T regressions passed.
+* Removed confirmed editor debug screenshots, replay exports, scene dumps,
+  one-off patch helpers and Python caches after verification. Unique user model
+  snapshots are preserved outside the publication directory.
+
+* Updated the public sample to the current large calibration (0.0546657873 m per
+  canvas unit), including opening widths, room/total areas, JSON, metadata and
+  matching 2D/WebGL images. Root documentation now identifies these as editor
+  illustrations rather than claiming new native Revit verification.
+* Reproduced an omitted outer quarter-square where two wall rectangles stopped
+  at their shared centerline endpoint. Offset wall faces now meet at a bounded
+  mitre intersection. Joined footprints drive both area routines and 2D/3D
+  corner solids, while centerline edits remain independent. Ten regression
+  checks cover moved/rejoined corners, mixed/straight T nodes, calibration, right angles, unequal thicknesses, gaps, T joins,
+  independent moves and inner-enclosure corner slivers. Corrected inward box
+  normals so wall and corner lighting agree; browser PNG export uses the actual
+  WebGL renderer at 2048 × 1536 pixels.
+
+* Added a Revit-independent local browser editor with linked SVG plan and WebGL
+  model views. Atomic document edits propagate shared corner constraints and
+  retain hosted openings, dimensions, clear areas and open balcony railings.
+  Existing inference runs in a cancellable local process. The English-first UI
+  includes Chinese, undo/redo and JSON import/export. The browser product is
+  named Text2Floorplan, with English `/en` and Chinese `/zh` entry pages. See
+  [the editor guide](../web_editor/README.md) for prototype scope and setup.
+* Fixed 2D navigation, which previously accepted only right-button dragging.
+  A replay of the production handlers failed for left dragging and passed for
+  right dragging before repair. Background left dragging, explicit Pan and
+  Space dragging now share a viewport-only navigation module. Nine regression
+  checks cover selection isolation, transformed coordinates, pointer capture,
+  click suppression and anchored zoom. Edge browser checks confirmed left
+  dragging and Pan change the SVG viewBox without changing its scale.
+  The redesigned English/Chinese interface includes larger work areas, three
+  view modes, a floating plan toolbar, room list and clearer property inputs.
+* Added direct edit handles shared by plan, perspective and opening elevation
+  views. Walls/railings expose two endpoints and a center; rooms expose corners,
+  edges and a center; opening rectangles expose four edges and a center in
+  elevation/3D. Center edits preserve dimensions and edge edits keep the opposite
+  edge fixed. Room-boundary movement propagates orthogonal constraints; independent
+  wall behavior is described below. Opening base height is editable for doors as well as windows;
+  floor, host-wall, spacing and dimension checks still reject invalid edits.
+  Browser drags verified 3D wall translation, window top-edge resizing and whole
+  window translation; 3D handle keyboard edits updated window width. Downloaded
+  JSON confirmed 1293.435 mm width, 1300 mm height and 1100 mm sill height. The
+  user's existing edited 133.1 m² document was exported and retained separately.
+* Decoupled wall translation from endpoint editing. The minimized replay showed
+  endpoint XY displacement being clamped and segment moves changing room/neighbor
+  geometry. Separate `translate_wall` and `move_wall_endpoint` commands now edit
+  authoritative wall segments without shared-corner propagation. Selecting a wall now
+  shows both endpoints and its center together in 2D/3D, with no mode switch.
+  The center target no longer spans the full wall and cannot intercept endpoint
+  drags. XY offsets and Alt fine placement remain available.
+  Endpoint rotation keeps the opposite end fixed and retains hosted openings.
+  Import and parameter changes preserve independent walls; explicit closed-room
+  handle edits transform the selected physical boundary group.
+  All 28 sample walls pass individual translation checks with neighbors fixed;
+  browser mouse drags confirmed that the endpoint circle changes only one end,
+  while the center square translates both ends equally with neighbors fixed.
+  Both views expose all three handles simultaneously; no mode switch remains. Wall-derived enclosures now replace the earlier reference-only area labels.
+  Closed cells from walls and balcony railings are measured after subtracting
+  wall footprints; 2D fills, labels and triangulated 3D floors share the result.
+  Open rooms have no numeric area, merged cells count once, and split/unknown
+  cells are reported. A browser drag restored the original wall coordinates
+  exactly and recovered 106.234745 m² from the partial 65.6 m² state; exported
+  JSON reimport and floor-triangle area sums matched. Undo/redo and the snap
+  toggle/shortcut were checked. Node snapping prioritizes endpoints/intersections and
+  supports wall-line T junctions in 2D/3D; S toggles it and Alt bypasses it. Cross-wall opening clearances
+  warn instead of blocking manual wall placement; host-fit checks remain strict.
+
+* The editor now starts empty. Three clickable English prompt examples cover
+  small, default medium (size omitted) and large apartments. English/Chinese
+  empty states, parameter template, import-sample action and responsive prompt
+  cards were verified in the browser.
 
 * ResPlan preparation now has one raw-to-filtered-canvas entry point. Separate
   clean/rebuild/filter dataset versions and the extra canvas CLI were removed.
@@ -61,10 +168,22 @@ RPLAN and feature pipeline consolidation: 2026-10-03.
   It validates all extracted files before initializing Python. Long-path file
   access was corrected after a full trial exposed a deeply nested runtime path.
 
+Opening placement was also checked in Edge using the bundled sample: Door 2
+moved from horizontal `wall_002` to vertical `wall_013` without changing its
+width, height or base elevation. The old wall cut was restored, the new cut
+followed the host, and swing/hinge flips updated the plan and linked 3D model.
+The English and Chinese inspector controls were checked. This validation is
+for the browser editor; native Revit hinge handling was not tested here.
+
 ## Verification
 
 | Check | Result |
 | --- | --- |
+| Local editor document contracts | Full current Python suite: 108 tests passed, including opening placement and Windows ZIP packaging contracts |
+| Independent wall segments | 11 regression tests include every sample wall; browser export/import retained the slanted wall with all other wall segments fixed; derived room boundaries follow current enclosures |
+| Browser edit handles and navigation | 31 JavaScript checks passed; host placement previews, hinge/swing geometry, navigation and wall handles checked |
+| Editor HTTP interface | Import/edit/reopen, invalid-edit rejection, origin guard, traversal guard and JS content type passed |
+| Editor browser trial | Real NVIDIA GPU inference loaded a six-room plan; wall height, shared-corner edits, window parameters, undo/redo, cancellation, language switching and JSON download checked |
 | Geometry/opening/area regressions | 22 tests passed |
 | Prepared GT, topology, masks, mapping, CLIP | All 75,379 rows verified |
 | ResPlan raw → filtered canvas | Two real source plans match the prior four-stage output; GT, topology, masks and IDs also match |
@@ -85,7 +204,9 @@ RPLAN and feature pipeline consolidation: 2026-10-03.
 | Git publication | Source repository excludes weights and installers; inference weights supplied by release data |
 
 `sample/floorplan.png`, `sample/model3d.png`, `sample/plan.json` and
-`sample/model-metadata.json` describe one matching accepted layout. Detailed
+`sample/model-metadata.json` describe one matching recalibrated layout (128.9 m²). The updated
+images use local editor geometry; native Revit measurements for this scale
+have not been rerun. Detailed
 logs and generated RVT/build products are local assets, excluded from Git.
 
 The current Windows online installer is version `1.0.0-20261002233122`,
@@ -96,7 +217,9 @@ installer fits GitHub's 2 GiB per-asset limit. The online release uses tag
 `v1.0.0`; its attachment names and configured download URLs must agree.
 macOS and Linux installers are outside the first release's scope.
 
-The corrected native sample total is 106.2 m², with 28 wall segments. Prepared
+The former native sample total was 106.2 m², with 28 wall segments; those
+original assets are preserved locally. The public sample now uses the current
+large scale and measures 128.888219 m² net, with the same layout and seed. Prepared
 training data, downloaded CLIP and build caches were physically moved to the
 parent workspace's `_local_assets/` directory. The active sample RVT and loaded
 DLLs remain in ignored local output directories so this Revit session remains
@@ -139,10 +262,10 @@ parent Git history, original supplied checkpoint or unique dataset was deleted.
 * Minimum areas and conservative spacing checks improve output quality but do
   not establish architectural or accessibility code compliance. Door-spacing
   guards do not simulate every native hinge/swing configuration.
-* The license reserves the author's rights and prohibits unauthorized reuse and
-  commercial use; it cannot physically prevent copying. Third-party MIT rights
-  and separately obtained dataset terms remain applicable. An independent legal
-  or complete dependency-provenance review was not performed.
+* Original project material is now under MIT, copyright 2026 Simon H. This
+  replaces the previous evaluation-only license for this release and permits
+  commercial reuse with the MIT notice retained. Third-party and dataset terms
+  remain separate. A complete dependency-provenance review was not performed.
 
 The local Revit registration points to the updated area-label assembly for its
 next startup. The current session's old ribbon assembly stays loaded until

@@ -1,12 +1,12 @@
-# Text2Revit user and developer guide
+# Text2Floorplan Revit user and developer guide
 
 [中文版本](guide.zh.md)
 
 ## Install and use
 
-Download `Text2Revit-Setup.exe` from the Windows release, close Revit, double-click the EXE and click **Install**. The online installer automatically downloads, verifies and installs the runtime and models and registers the tool. Do not download or extract the data attachments manually. Allow at least 12 GB of free disk space. If a download is interrupted, run the installer again; validated parts are reused and partial downloads can resume. A complete offline installer performs the same installation without downloads. No separate archive utility is required.
+Download `text2floorplan_revit-Setup.exe` from the Windows release, close Revit, double-click the EXE and click **Install**. The online installer automatically downloads, verifies and installs the runtime and models and registers the tool. Do not download or extract the data attachments manually. Allow at least 12 GB of free disk space. If a download is interrupted, run the installer again; validated parts are reused and partial downloads can resume. A complete offline installer performs the same installation without downloads. No separate archive utility is required.
 
-Start Revit, open a project's floor plan view and select **Text2Revit → Generate Model**. Use one of the English examples:
+Start Revit, open a project's floor plan view and select **Text2Floorplan → Generate Model**. Use one of the English examples:
 
 ```text
 A small 2-bedroom apartment with 1 bathroom and 1 balcony.
@@ -26,8 +26,8 @@ Installation applies to the current Windows user. Other Windows accounts on the 
 
 ## Standalone uninstall tool
 
-Close all Revit windows, then double-click `Text2Revit-Uninstall.exe` and click
-**Uninstall**. Run it under the Windows account that installed Text2Revit.
+Close all Revit windows, then double-click `text2floorplan_revit-Uninstall.exe` and click
+**Uninstall**. Run it under the Windows account that installed Text2Floorplan Revit.
 It works without the setup executable or a network connection. It removes the
 plugin, bundled runtime/models and download cache, while preserving generated
 jobs, family caches and language preferences. Windows **Installed apps** remains

@@ -1,18 +1,50 @@
-# Verified example
+# Calibrated example
 
-Both images show the same generated layout, constructed with the current C#
-builders in Revit 2022. `floorplan.png` is a native Revit export with every room
-area and the total; `model3d.png` is the matching shaded 3D export. Balcony outer
-edges use railings, with room-separation lines for native area measurement.
+[中文](README.zh.md)
+
+The two images and `plan.json` describe the same editable apartment. The layout
+retains seed `3968430468` and now uses the current **large** physical calibration:
+**0.05466578730522668 metres per canvas unit**. Total net floor area, including
+balconies and excluding joined wall footprints, is **128.9 m²**.
 
 Prompt: `A large 3-bedroom apartment with 2 bathrooms and 2 balconies.`
-Accepted seed: `3968430468`. Native total area including balconies: **106.2 m²**.
-Nine rooms, 28 wall segments, nine doors, four windows and five railing segments.
-Kitchen: 8.9 m²; bathrooms: 3.2 m² and 2.2 m². All windows avoid the continuous
-entrance facade; the bedroom connected to the balcony has no window.
 
-`plan.json` is the accepted backend result. Its areas estimate clear floor area
-by subtracting wall footprints; native Revit areas can differ slightly at joins.
-`model-metadata.json` records native room areas and element counts.
+| Space | Net area |
+|---|---:|
+| Living room | 49.1 m² |
+| Kitchen | 10.8 m² |
+| Bedroom 1 | 16.0 m² |
+| Bedroom 2 | 21.2 m² |
+| Bedroom 3 | 14.3 m² |
+| Bathroom 1 | 3.9 m² |
+| Bathroom 2 | 2.7 m² |
+| Balcony 1 | 3.0 m² |
+| Balcony 2 | 7.7 m² |
 
-The narrow bedroom appendage was transferred to the living room before door placement. The two reported nearby doors now lie on different boundary runs with approximately 604 mm between their opening segments.
+The total uses full precision rather than adding rounded labels. There are
+28 wall segments, nine doors, four windows and five balcony railing segments.
+Exterior walls are 400 mm thick, partitions 200 mm, and walls 3.3 m high.
+Meeting wall faces include complete corner joins; editable centerlines stay
+independent. Opening widths follow the calibrated horizontal scale; wall
+thicknesses, wall heights and opening heights/sills retain their metre values.
+
+- `floorplan.png`: newly rendered 2D plan with current room and total areas.
+- `model3d.png`: 2048 × 1536 PNG exported by the browser's WebGL renderer from
+  the same sample document, including real opening voids and open railings.
+- `model-metadata.json`: current calibration, areas, counts and verification scope.
+
+These updated illustrations come from the local editor geometry. They are not
+new native Revit exports; the retained native sample is available below. Native Revit measurements for this recalibrated layout have not
+been rerun. The JSON retains the Revit input schema.
+
+All windows avoid the continuous entrance facade. The bedroom connected to a
+balcony has no additional window. Room areas, floor meshes, JSON reimport and
+opening-placement rules are checked against the current sample.
+
+## Native Revit example
+
+`revit-floorplan.png` and `revit-model3d.png` are the original native Revit 2022
+exports from the earlier 106.2 m² sample. `revit-plan.json` retains their input,
+and `revit-metadata.json` records the native measured areas and element counts.
+They are preserved alongside the browser illustrations so both workflows can
+be inspected. The current 128.9 m² browser sample uses a later scale calibration.

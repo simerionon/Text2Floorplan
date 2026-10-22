@@ -37,6 +37,22 @@ FUNCTIONAL_TYPES = {
     "storage",
 }
 
+#: Node order used when building an inference graph. It must match the training
+#: data, which groups node names alphabetically by room type and appends
+#: front_door last (see preprocessing/rplan/image_conversion.py, "grouped by
+#: type, alphabetical type order"). Measured on topology_gt.npz (20k samples):
+#: slot 0 is balcony 80.7% / bathroom 19.3%, slot 1 is bathroom 62.6% /
+#: balcony 22.6%, bedrooms occupy the next slots, then kitchen, then living,
+#: and front_door is always the last valid slot.
+FUNCTIONAL_TYPE_ORDER = (
+    "balcony",
+    "bathroom",
+    "bedroom",
+    "kitchen",
+    "living",
+    "storage",
+)
+
 
 @dataclass(frozen=True)
 class PromptRoomCounts:
@@ -329,14 +345,7 @@ def sample_rule_topology(
     count_dict = counts.as_dict()
     ordered_types: list[str] = []
     room_ids_by_type: dict[str, list[int]] = {}
-    for room_type in (
-        "living",
-        "kitchen",
-        "bedroom",
-        "bathroom",
-        "balcony",
-        "storage",
-    ):
+    for room_type in FUNCTIONAL_TYPE_ORDER:
         ids = []
         for _ in range(count_dict[room_type]):
             room_id = len(ordered_types)

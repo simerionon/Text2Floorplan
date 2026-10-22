@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Text2Floorplan</title><link rel="stylesheet" href="/styles.css">
+</head>
+<body class="is-empty">
+  <header class="topbar">
+    <div class="brand"><span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32"><path d="M5 5h22v22H5zM5 17h13v10M18 5v7m0 5h9M11 5v6"/></svg></span><div><span class="brand-name" data-i18n="productName">Text2Floorplan</span><small data-i18n="subtitle">A little imagination. A place of your own.</small></div></div>
+    <div class="header-actions"><span class="local"><i></i><span data-i18n="local">Working locally</span></span><div class="history-actions"><button id="undo" title="Undo (Ctrl+Z)" data-i18n="undo">↶ Undo</button><button id="redo" title="Redo (Ctrl+Shift+Z)" data-i18n="redo">↷ Redo</button></div><select id="language" aria-label="Language"><option value="en">English</option><option value="zh">中文</option></select><button id="import" data-i18n="import">Open JSON</button><button id="export" class="primary save-button" data-i18n="export">Save model ↗</button><input type="file" id="file" accept=".json,application/json" hidden></div>
+  </header>
+  <section class="generator">
+    <div class="generator-intro"><span class="eyebrow" data-i18n="promptLabel">START WITH AN IDEA</span><h1 data-i18n="promptHeadline">Describe the space. Make it yours.</h1></div>
+    <div class="generator-input"><div class="prompt-row"><input id="prompt" placeholder="A 3-bedroom apartment with 2 bathrooms and 1 balcony." aria-label="Apartment prompt" aria-describedby="prompt-format"><button id="generate" class="primary" data-i18n="generate">Generate layout ✧</button><button id="cancel" hidden data-i18n="cancel">Cancel</button></div><div class="prompt-guide" id="prompt-format"><code>A <span>(large / small / none = default)</span> n-bedroom apartment with n bathrooms and n balconies.</code><span data-i18n="examples">Replace n with a count. Omit the size for medium; do not type “none”.</span></div><div class="prompt-presets" aria-label="Prompt examples"><button type="button" data-prompt="A small 2-bedroom apartment with 1 bathroom and 1 balcony."><span data-i18n="smallExample">Small · 2 bedrooms</span><code>A small 2-bedroom apartment with 1 bathroom and 1 balcony.</code><span class="preset-arrow" aria-hidden="true">↗</span></button><button type="button" data-prompt="A 3-bedroom apartment with 2 bathrooms and 1 balcony."><span data-i18n="defaultExample">Default · 3 bedrooms</span><code>A 3-bedroom apartment with 2 bathrooms and 1 balcony.</code><span class="preset-arrow" aria-hidden="true">↗</span></button><button type="button" data-prompt="A large 4-bedroom apartment with 2 bathrooms and 2 balconies."><span data-i18n="largeExample">Large · 4 bedrooms</span><code>A large 4-bedroom apartment with 2 bathrooms and 2 balconies.</code><span class="preset-arrow" aria-hidden="true">↗</span></button></div></div>
+  </section>
+  <nav class="workspace-bar">
+    <div class="project-info"><span class="project-icon" aria-hidden="true">▧</span><div><strong data-i18n="project">Apartment study</strong><span class="project-caption" data-i18n="projectCaption">Ground floor / editable model</span></div><span id="area" class="area"></span></div>
+    <div class="view-switch" role="group" aria-label="Workspace views"><button id="view-plan" data-view="plan" data-i18n="planOnly" aria-pressed="false">2D plan</button><button id="view-split" data-view="split" data-i18n="splitView" aria-pressed="true">Split view</button><button id="view-model" data-view="model" data-i18n="modelOnly" aria-pressed="false">3D model</button></div>
+    <button id="sample" class="sample-button" data-i18n="sample">Import sample</button>
+  </nav>
+  <main>
+    <div class="views" data-mode="split">
+      <section class="viewport plan-pane">
+        <div class="view-title"><span><span class="view-dot"></span><span data-i18n="plan">Floor plan</span><small class="view-type">2D</small></span><span class="subtle" data-i18n="editable">EDITABLE</span></div>
+        <div class="plan-canvas"><svg id="plan" role="group" aria-label="Editable floor plan" tabindex="0"></svg><span class="canvas-label" data-i18n="groundFloor">GROUND FLOOR</span><div class="empty-state"><span class="empty-symbol" aria-hidden="true">⌑</span><span class="eyebrow">01 / 2D</span><h2 data-i18n="emptyPlan">Your next space starts here.</h2><p data-i18n="emptyPlanHelp">Describe an apartment above, then generate its editable floor plan.</p></div></div>
+        <div class="canvas-toolbar"><div class="tool-group"><button id="select-tool" class="tool-button active" aria-pressed="true"><span aria-hidden="true">↖</span><span data-i18n="selectTool">Select</span><kbd>V</kbd></button><button id="pan-tool" class="tool-button" aria-pressed="false"><span aria-hidden="true">✥</span><span data-i18n="panTool">Pan</span><kbd>H</kbd></button></div><div class="tool-group"><button id="node-snap" aria-pressed="true" title="Node snapping (S); hold Alt to disable"><span aria-hidden="true">⌖</span><span data-i18n="snap">Snap</span></button></div><div class="tool-group zoom-tools"><button id="zoom-out" aria-label="Zoom out">−</button><span id="zoom-label">100%</span><button id="zoom-in" aria-label="Zoom in">+</button><button id="fit2" data-i18n="fit">Fit</button></div></div>
+        <div class="viewport-footer"><span data-i18n="planHint">Drag blank space to pan · Scroll to zoom</span><span class="unit-tag">mm / m²</span></div>
+      </section>
+      <section class="viewport model-pane">
+        <div class="view-title"><span><span class="view-dot model-dot"></span><span data-i18n="model">Spatial preview</span><small class="view-type">3D</small></span><span class="live-badge"><i></i><span data-i18n="live">LIVE</span></span></div>
+        <div class="canvas-wrap"><canvas id="model" aria-label="Interactive 3D model"></canvas><svg id="model-handles" class="model-handles" aria-label="3D edit handles"></svg><span class="canvas-label" data-i18n="perspective">PERSPECTIVE</span><div class="empty-state"><span class="empty-symbol cube-symbol" aria-hidden="true">◇</span><span class="eyebrow">02 / 3D</span><h2 data-i18n="emptyModel">A new perspective awaits.</h2><p data-i18n="emptyModelHelp">Your 3D model will appear here, linked to every edit in the plan.</p></div><div class="model-tools"><button id="top3" data-i18n="topView">Top</button><button id="fit3" data-i18n="resetView">Reset view</button><button id="export3" data-i18n="saveImage" disabled>Save PNG</button></div></div>
+        <div class="viewport-footer"><span data-i18n="modelHint">Drag to orbit · Scroll to zoom</span><span class="linked-dot" data-i18n="linked">Linked to plan</span></div>
+      </section>
+    </div>
+    <aside><div class="inspector-heading"><span data-i18n="properties">Inspector</span><span id="selection-count">—</span></div><div id="inspector"></div><div class="notes"><span class="eyebrow" data-i18n="workflow">A FEW HELPFUL SHORTCUTS</span><p><kbd>Space</kbd><span data-i18n="spaceHint">Hold and drag to pan anywhere.</span></p><p><kbd>V</kbd><span data-i18n="selectHint">Select an element to edit its handles.</span></p><p><kbd>H</kbd><span data-i18n="panHint">Move around without selecting objects.</span></p><p><kbd>S</kbd><span data-i18n="snapHint">Toggle node snapping. Hold Alt to bypass.</span></p><div class="note-tip" data-i18n="note">The plan and model share one document. Every accepted change stays in sync.</div></div></aside>
+  </main>
+  <footer><span class="status-dot"></span><span id="status" role="status" aria-live="polite">Ready. Generate a layout or open a JSON model.</span><span class="footer-right" data-i18n="footer">Designed locally. Saved by you.</span></footer>
+  <script type="module" src="/app.js"></script>
+</body>
+</html>

@@ -1,48 +1,75 @@
 {
-  "doors": 9,
-  "total_area_m2": 106.20474534180914,
-  "windows": 4,
-  "passed": true,
+  "source": "Text2Floorplan local browser geometry",
+  "updated": "2026-10-19",
+  "seed": 3968430468,
+  "prompt": "A large 3-bedroom apartment with 2 bathrooms and 2 balconies.",
+  "pixel_to_meter": 0.05466578730522668,
+  "physical_scale": {
+    "size": "large",
+    "reference_pixel_to_meter": 0.04990280805142033,
+    "output_area_multiplier": 1.2,
+    "output_length_multiplier": 1.0954451150103321,
+    "pixel_to_meter": 0.05466578730522668
+  },
+  "area_definition": "Current bounded wall/railing spaces minus wall footprints, including balconies; merged spaces counted once; unclosed rooms excluded",
+  "total_area_m2": 128.8882192864014,
   "rooms": [
     {
+      "room_id": 0,
       "name": "Living",
-      "area_m2": 40.65026607174516
+      "area_m2": 49.14728840972938
     },
     {
+      "room_id": 1,
       "name": "Kitchen",
-      "area_m2": 8.913632532087538
+      "area_m2": 10.849955465638063
     },
     {
+      "room_id": 2,
       "name": "Bedroom",
-      "area_m2": 13.174070683196375
+      "area_m2": 16.037661718327836
     },
     {
+      "room_id": 3,
       "name": "Bedroom",
-      "area_m2": 17.510434161444746
+      "area_m2": 21.227628111506984
     },
     {
+      "room_id": 4,
       "name": "Bedroom",
-      "area_m2": 11.783715634798751
+      "area_m2": 14.347519699012691
     },
     {
+      "room_id": 5,
       "name": "Bathroom",
-      "area_m2": 3.159301528473246
+      "area_m2": 3.8827571681406283
     },
     {
+      "room_id": 6,
       "name": "Bathroom",
-      "area_m2": 2.167560082441208
+      "area_m2": 2.6770350954852673
     },
     {
+      "room_id": 7,
       "name": "Balcony",
-      "area_m2": 2.49354108132018
+      "area_m2": 3.041373015069723
     },
     {
+      "room_id": 8,
       "name": "Balcony",
-      "area_m2": 6.352223566301925
+      "area_m2": 7.677000603490828
     }
   ],
-  "revit_version": "2022",
-  "railings": 5,
   "walls": 28,
-  "area_notes": 10
+  "railings": 5,
+  "doors": 9,
+  "windows": 4,
+  "wall_joints": 10,
+  "area_notes": 10,
+  "geometry_checks_passed": true,
+  "native_revit_verified": false,
+  "image_sources": {
+    "floorplan.png": "2D geometry render with joined wall contours and current net areas",
+    "model3d.png": "Browser WebGL PNG export at 2048 x 1536"
+  }
 }

@@ -1,6 +1,6 @@
 # Third-party notices
 
-The project's evaluation license applies only to the author's original material.
+The project's MIT license applies only to the author's original material.
 It does not replace any third-party license.
 
 * `resplan_utils.py` is derived from ResPlan's MIT-licensed helper code, copyright
@@ -11,7 +11,7 @@ It does not replace any third-party license.
   Consult that grant and the upstream takedown information when obtaining data.
 * RPLAN datasets and any optional external toolbox must be obtained separately
   under their own terms. This repository grants no rights to those assets.
-* The offline installer includes the public OpenAI CLIP text encoder. OpenAI's
+* The complete Windows distributions include the public OpenAI CLIP text encoder. OpenAI's
   CLIP software is MIT licensed, copyright 2021 OpenAI; see
   `third_party/CLIP-MIT.txt` and the
   [upstream license](https://github.com/openai/CLIP/blob/main/LICENSE).
@@ -19,8 +19,9 @@ It does not replace any third-party license.
 * Python/Conda, PyTorch, NumPy, Transformers, Shapely, Matplotlib and their
   transitive dependencies retain their original licenses and notices. The packed
   runtime includes installed package license metadata. Their presence does not
-  make them subject to the Text2Revit evaluation license.
-* Autodesk Revit is a separately licensed prerequisite. API reference assemblies
+  make them subject to the project MIT license.
+* Autodesk Revit is a separately licensed prerequisite for the Revit add-in only;
+  the browser editor does not require Revit. API reference assemblies
   are build dependencies and are not copied into the add-in payload.
 * LZMA2 installer builds include `7zr.exe` from Igor Pavlov's public-domain
   LZMA SDK 26.03. The original SDK notice is bundled as

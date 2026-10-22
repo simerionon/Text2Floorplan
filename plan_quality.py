@@ -3,7 +3,7 @@ import json
 import math
 from pathlib import Path
 
-from shapely.geometry import LineString, Polygon
+from shapely.geometry import LineString, Point, Polygon
 from shapely.ops import unary_union
 
 DEFAULT_MIN_AREAS_M2 = {
@@ -58,14 +58,69 @@ def load_min_areas():
     return values
 
 
+def build_wall_footprints(walls, pixel_to_meter):
+    """Join meeting wall faces without changing editable centerline endpoints.
+
+    Two non-collinear end faces meet at their offset-line intersection. A mixed
+    T retains the mitre between its two exterior walls while its inner branch
+    butts into them. Straight T junctions retain the existing overlapping body.
+    Limit very acute mitres to avoid unbounded spikes.
+    """
+    footprints, endpoints, joints, segments = [], {}, [], []
+    tolerance = .00001 / pixel_to_meter
+    for index, wall in enumerate(walls):
+        line = LineString(wall["reference_line"])
+        segments.append(line)
+        half = wall["thickness_m"] / (2 * pixel_to_meter)
+        footprints.append(line.buffer(half, cap_style=2, join_style=2))
+        a, b = list(line.coords)
+        length = line.length
+        for start, end in ((a, b), (b, a)):
+            key = tuple(round(v / tolerance) for v in start)
+            endpoints.setdefault(key, []).append((index, start,
+                ((end[0]-start[0])/length, (end[1]-start[1])/length), half))
+    occupied = unary_union(footprints)
+    for entries in endpoints.values():
+        members = {entry[0] for entry in entries}
+        pair = entries if len(entries) == 2 else [entry for entry in entries
+            if walls[entry[0]].get("host") == "exterior_wall"]
+        if len(pair) != 2:
+            continue
+        (i, origin, a, ha), (j, other, b, hb) = pair
+        cross = a[0]*b[1]-a[1]*b[0]
+        if abs(cross) < 1e-7:
+            continue
+        # A wall continuing through this point makes an overlapping T junction.
+        if any(k not in members and line.distance(Point(origin)) < tolerance
+               for k, line in enumerate(segments)):
+            continue
+        sign = 1 if cross > 0 else -1
+        p = (origin[0]+sign*a[1]*ha, origin[1]-sign*a[0]*ha)
+        q = (other[0]-sign*b[1]*hb, other[1]+sign*b[0]*hb)
+        delta = (q[0]-p[0], q[1]-p[1])
+        distance = (delta[0]*b[1]-delta[1]*b[0])/cross
+        corner = (p[0]+a[0]*distance, p[1]+a[1]*distance)
+        if math.dist(corner, origin) > 4*max(ha, hb):
+            corner = origin
+        addition = Polygon([origin, p, corner, q]).convex_hull.difference(occupied)
+        patches = [addition] if addition.geom_type == "Polygon" else getattr(addition, "geoms", [])
+        for patch in patches:
+            if patch.geom_type != "Polygon" or patch.area <= tolerance**2:
+                continue
+            footprints.append(patch)
+            occupied = occupied.union(patch)
+            joints.append({"wall_ids": [walls[i].get("wall_id", str(i)), walls[j].get("wall_id", str(j))],
+                "polygon": [list(p) for p in (list(patch.exterior.coords)[:-1] if patch.exterior.is_ccw
+                                               else list(patch.exterior.coords)[:-1][::-1])],
+                "height_m": min(walls[i].get("height_m", 3.3), walls[j].get("height_m", 3.3))})
+    return unary_union(footprints), joints
+
+
 def measure_room_areas(rooms, pixel_to_meter, walls=()):
     """Estimate clear floor area after subtracting wall footprints."""
     if pixel_to_meter <= 0:
         raise ValueError("Metre scale must be positive")
-    footprints = [LineString(w["reference_line"]).buffer(
-        w["thickness_m"] / (2.0 * pixel_to_meter), cap_style=2, join_style=2)
-        for w in walls]
-    wall_area = unary_union(footprints)
+    wall_area, _ = build_wall_footprints(walls, pixel_to_meter)
     areas = {}
     for room in rooms:
         if room["type"] in {"front_door", "door"}:

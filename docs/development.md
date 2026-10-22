@@ -1,5 +1,36 @@
 # Development and release packaging
 
+## Windows browser edition
+
+Use a prepared Windows x64 Conda environment with `requirements.txt` installed.
+Pack it with `conda-pack==0.8.1` into a ZIP containing `python.exe` and
+`Scripts/conda-unpack-script.py`. Supply an inference-only models directory
+containing `flow_matching_best.pth` and the complete `clip/` text encoder.
+
+```powershell
+python -m pip install conda-pack==0.8.1
+conda pack -p C:/Envs/Text2Floorplan -o web_editor/build/runtime.zip --format zip
+python -m web_editor.build_release --runtime-zip web_editor/build/runtime.zip --models C:/Models --output web_editor/dist
+```
+
+Create `web_editor/build` before packing. The builder uses explicit application
+file lists and excludes datasets, training state, IDE settings and Git metadata.
+It creates a small `Text2Floorplan-Web-Windows.zip`, numbered independent data ZIPs,
+a complete offline ZIP and `SHA256-web.txt`. Each data ZIP is below 2 GiB. Upload the
+main ZIP, **all** data ZIPs, checksums and release notes together. The complete
+offline ZIP exceeds that per-file limit; distribute it through another host.
+The portable launcher validates data hashes and paths, extracts locally, runs
+Conda relocation and checks inference dependencies before opening localhost.
+It does not register a service or a Revit add-in. Generated output stays in the
+extracted directory and is excluded from source control.
+
+The repository and browser product are Text2Floorplan. The optional Revit
+product is **Text2Floorplan Revit**, with `text2floorplan_revit-Setup.exe` and
+`text2floorplan_revit-Uninstall.exe`. Existing `Text2Revit` assembly namespaces,
+registration GUID, local data directory and registry key are retained for
+compatibility with earlier installations. User-facing ribbon and dialog names
+use Text2Floorplan.
+
 ## C# files
 
 `revit/Text2Revit.Addin/App.cs` registers the ribbon button. `Command.cs` opens
@@ -17,7 +48,7 @@ The installer copies the runtime/models/add-ins into the current user's local
 application data, writes version-specific `.addin` registrations and adds an
 uninstaller. End users do not place C# source or DLLs manually.
 
-The release also includes `Text2Revit-Uninstall.exe`, a standalone uninstall
+The release also includes `text2floorplan_revit-Uninstall.exe`, a standalone uninstall
 tool that opens directly in uninstall mode without an installation payload or
 command-line arguments. Close Revit, run it under the Windows account that
 installed Text2Revit, and click Uninstall. It removes product releases, owned
@@ -47,13 +78,13 @@ the Python runtime:
 python revit/build_release.py --uninstaller-only
 ```
 
-This writes `revit/dist/Text2Revit-Uninstall.exe` and updates its entry in
-`SHA256.txt`. Full release builds include this tool too.
+This writes `revit/dist/text2floorplan_revit-Uninstall.exe` and updates its entry in
+`SHA256-revit.txt`. Full release builds include this tool too.
 
 The builder compiles Revit 2020–2026 plugins, exports the author's checkpoint
 without optimizer state, copies the CLIP text encoder, packs Python/PyTorch,
-assembles `revit/dist/Text2Revit-Setup.exe` and verifies its appended payload hash.
-Runtime/build caches are reusable. It also writes `SHA256.txt`.
+assembles `revit/dist/text2floorplan_revit-Setup.exe` and verifies its appended payload hash.
+Runtime/build caches are reusable. It also writes `SHA256-revit.txt`.
 
 By default, the original runtime and model files are compressed together into
 a solid LZMA2 archive with a 128 MiB dictionary. The installer bundles the
@@ -68,14 +99,14 @@ ZIP is a build cache and is expanded before LZMA2 compression. Use
 Build the small online installer and data attachments for a specific tag:
 
 ```powershell
-python revit/build_release.py --checkpoint checkpoints/flow_matching_best.pth --online-release-url https://github.com/Simon777hh/Text2Revit/releases/download/v1.0.0
+python revit/build_release.py --checkpoint checkpoints/flow_matching_best.pth --online-release-url https://github.com/Simon777hh/text2floorplan/releases/download/v1.1.0
 ```
 
-Upload `Text2Revit-Setup.exe`, all `environment.7z.*` parts and `SHA256.txt` from
+Upload `text2floorplan_revit-Setup.exe`, all `environment.7z.*` parts and `SHA256-revit.txt` from
 `revit/dist/` to that release. Keep asset names and the configured tag unchanged:
 their URLs are embedded in the installer. Each data part is at most 1.5 GiB.
 Publish all assets together so the installer can retrieve its complete payload.
-Also upload `Text2Revit-Uninstall.exe` to offer standalone removal.
+Also upload `text2floorplan_revit-Uninstall.exe` to offer standalone removal.
 
 The installer uses HTTPS and the Windows system proxy, reuses validated cached
 parts, requests byte ranges for interrupted downloads and checks per-part and
@@ -133,8 +164,8 @@ python -m preprocessing.features.validate_final_training_data
 python tests/verify_opening_placement.py outputs/verification/plan.json
 python tests/verify_installer_compression.py --stub revit/Installer/bin/Release/net47/Text2Revit.Setup.exe --extractor revit/build_tools/lzma/sdk/bin/x64/7zr.exe --work-dir outputs/installer-compression-tests
 python tests/verify_installer_cancellation.py --stub revit/Installer/bin/Release/net47/Text2Revit.Setup.exe --work-dir outputs/installer-cancellation-tests
-python tests/verify_uninstaller.py --tool revit/dist/Text2Revit-Uninstall.exe --work-dir outputs/uninstaller-tests
-revit/dist/Text2Revit-Setup.exe --verify-only
+python tests/verify_uninstaller.py --tool revit/dist/text2floorplan_revit-Uninstall.exe --work-dir outputs/uninstaller-tests
+revit/dist/text2floorplan_revit-Setup.exe --verify-only
 ```
 
 `tests/verify_opening_placement.py` independently checks a real generated JSON:

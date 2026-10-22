@@ -2,11 +2,12 @@
   <PropertyGroup>
     <TargetFramework>net47</TargetFramework><OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms><LangVersion>latest</LangVersion>
-    <PlatformTarget>x64</PlatformTarget><AssemblyName>Text2Revit.Setup</AssemblyName>
+    <PlatformTarget>x64</PlatformTarget><AssemblyName>text2floorplan_revit.Setup</AssemblyName>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj/**;bin/**</DefaultItemExcludes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(StandaloneUninstaller)' == 'true'">
-    <AssemblyName>Text2Revit-Uninstall</AssemblyName>
+    <AssemblyName>text2floorplan_revit-Uninstall</AssemblyName>
     <DefineConstants>$(DefineConstants);STANDALONE_UNINSTALLER</DefineConstants>
   </PropertyGroup>
   <ItemGroup><Compile Include="..\Shared\*.cs" Link="%(Filename)%(Extension)" /><Reference Include="System.IO.Compression" /><Reference Include="System.IO.Compression.FileSystem" /><Reference Include="System.Runtime.Serialization" /></ItemGroup>

@@ -10,8 +10,8 @@ namespace Text2Revit.Addin
     {
         public Result OnStartup(UIControlledApplication app)
         {
-            try { app.CreateRibbonTab("Text2Revit"); } catch (Autodesk.Revit.Exceptions.ArgumentException) { }
-            var panel = app.CreateRibbonPanel("Text2Revit", UiLanguage.Text("Apartment models","户型模型"));
+            try { app.CreateRibbonTab("Text2Floorplan"); } catch (Autodesk.Revit.Exceptions.ArgumentException) { }
+            var panel = app.CreateRibbonPanel("Text2Floorplan", UiLanguage.Text("Apartment models","户型模型"));
             var data = new PushButtonData("Text2Revit.Generate", UiLanguage.Text("Generate\nModel","生成\n模型"), Assembly.GetExecutingAssembly().Location, typeof(Command).FullName);
             data.AvailabilityClassName = typeof(PlanAvailability).FullName;
             var button = (PushButton)panel.AddItem(data);

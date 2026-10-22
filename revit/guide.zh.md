@@ -1,25 +1,25 @@
-# Text2Revit 用户安装与开发说明
+# Text2Floorplan Revit 用户安装与开发说明
 
 [English](guide.md)
 
 ## 给用户
 
-关闭 Revit，双击 `Text2Revit-Setup.exe`，点击安装。
+关闭 Revit，双击 `text2floorplan_revit-Setup.exe`，点击安装。
 在线安装程序自动下载、校验并安装 Python、模型和各年插件，并生成插件注册文件。用户只需下载 EXE，无需手动下载或解压数据附件。下载中断后重新运行安装器即可复用已验证的数据，并继续未完成的下载。
-安装完成后启动 Revit，打开项目中的楼层平面，在 Text2Revit 选项卡点击 Generate Model。
+安装完成后启动 Revit，打开项目中的楼层平面，在 Text2Floorplan 选项卡点击 Generate Model。
 按弹窗示例输入英文 prompt，点击生成。可以修改整体大小、卧室数、卫生间数和阳台数。
 生成三维墙、真实门窗族、开放阳台栏杆、房间及标记，完成后自动打开三维视图。在该三维视图中也可再次点击生成。
 中等户型默认省略大小词，例如 `A 3-bedroom apartment with 2 bathrooms and 1 balcony.`；小户型和大户型分别加 `small`、`large`。
 无需安装 Conda、设置环境变量或手动复制文件。CPU 可用，有兼容的 NVIDIA 显卡时自动加速。
 安装按当前 Windows 用户生效；同机其他 Windows 用户需分别安装。
-Windows 的“已安装的应用”中可以卸载 Text2Revit。卸载保留生成记录。
+Windows 的“已安装的应用”中可以卸载 Text2Floorplan Revit。卸载保留生成记录。
 在线安装需要联网，之后推理离线运行。安装过程建议预留 12 GB 空间，无需另装压缩软件。完整离线版也可单独提供，无需在安装时下载数据。
 首次启动 Revit 可能显示 Autodesk 的插件信任提示，选择“始终加载”即可。
 目前已在 Revit 2022 实际验证生成；2020、2021、2023–2026 已单独编译，仍需对应年份实机测试。
 
 ## 独立卸载工具
 
-关闭所有 Revit 窗口，双击 `Text2Revit-Uninstall.exe`，点击“卸载”。
+关闭所有 Revit 窗口，双击 `text2floorplan_revit-Uninstall.exe`，点击“卸载”。
 请使用安装 Text2Revit 时的 Windows 用户账号运行。
 卸载工具无需安装包，也无需联网；会移除插件、运行环境、模型及下载缓存，
 保留生成记录、门窗族缓存和语言偏好。也可通过 Windows“已安装的应用”卸载。

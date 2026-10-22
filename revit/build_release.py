@@ -56,9 +56,10 @@ def run(command, **kwargs):
 
 def build_uninstaller(dotnet, env):
     run([dotnet, "build", ROOT / "Installer/Text2Revit.Installer.csproj", "-c", "Release",
-         "-p:StandaloneUninstaller=true", "-v", "minimal"], env=env)
-    destination = DIST / "Text2Revit-Uninstall.exe"
-    shutil.copy2(ROOT / "Installer/bin/Release/net47/Text2Revit-Uninstall.exe", destination)
+         "-p:StandaloneUninstaller=true", "-p:BaseIntermediateOutputPath=obj/standalone/",
+         "-p:OutputPath=bin/Standalone/", "-v", "minimal"], env=env)
+    destination = DIST / "text2floorplan_revit-Uninstall.exe"
+    shutil.copy2(ROOT / "Installer/bin/Standalone/text2floorplan_revit-Uninstall.exe", destination)
     return destination
 
 def build_plugins(dotnet: Path, years, env):
@@ -248,7 +249,7 @@ def assemble(stub: Path, plugins, modeldir: Path, packed: Path, version: str, co
         if remote: release["remote_environment"] = remote
         package.writestr("release.json",json.dumps(release,ensure_ascii=False))
     DIST.mkdir(exist_ok=True)
-    final = DIST / "Text2Revit-Setup.exe"
+    final = DIST / "text2floorplan_revit-Setup.exe"
     temporary = final.with_suffix(".partial")
     sha = hashlib.sha256()
     with temporary.open("wb") as output:
@@ -262,12 +263,12 @@ def assemble(stub: Path, plugins, modeldir: Path, packed: Path, version: str, co
     run([final,"--verify-only"])
     digest = hashlib.file_digest(final.open("rb"),"sha256").hexdigest()
     checksums = digest + "  " + final.name + "\n"
-    uninstaller = DIST / "Text2Revit-Uninstall.exe"
+    uninstaller = DIST / "text2floorplan_revit-Uninstall.exe"
     if uninstaller.is_file():
         with uninstaller.open("rb") as source:
             checksums += hashlib.file_digest(source,"sha256").hexdigest()+"  "+uninstaller.name+"\n"
     if remote: checksums += "".join(part["sha256"] + "  " + part["name"] + "\n" for part in remote["parts"])
-    (DIST / "SHA256.txt").write_text(checksums,encoding="utf-8")
+    (DIST / "SHA256-revit.txt").write_text(checksums,encoding="utf-8")
     print(f"READY: {final}\nSize: {final.stat().st_size / 1024**3:.2f} GB",flush=True)
 
 def main():
@@ -289,12 +290,18 @@ def main():
     env["NUGET_PACKAGES"]=str(TOOLS/"nuget")
     env["DOTNET_CLI_TELEMETRY_OPTOUT"]="1"
     env["DOTNET_CLI_UI_LANGUAGE"]="en"
+    for key, folder in (("NUGET_SCRATCH", "nuget_scratch"), ("NUGET_HTTP_CACHE_PATH", "http_cache"),
+                        ("TEMP", "tmp"), ("TMP", "tmp")):
+        path = TOOLS / folder
+        path.mkdir(parents=True, exist_ok=True)
+        env[key] = str(path.resolve())
+    env["DOTNET_GENERATE_ASPNET_CERTIFICATE"] = "false"
     dotnet=sdk()
     if args.uninstaller_only:
         uninstaller=build_uninstaller(dotnet,env)
         with uninstaller.open("rb") as source:
             digest=hashlib.file_digest(source,"sha256").hexdigest()
-        checksums=DIST/"SHA256.txt"
+        checksums=DIST/"SHA256-revit.txt"
         lines=checksums.read_text(encoding="utf-8").splitlines() if checksums.exists() else []
         lines=[line for line in lines if not line.endswith("  "+uninstaller.name)]
         checksums.write_text("\n".join(lines+[digest+"  "+uninstaller.name])+"\n",encoding="utf-8")
@@ -310,7 +317,7 @@ def main():
     modeldir=BUILD/"models"
     models(args.python,checkpoint,modeldir)
     packed=runtime(args.python)
-    version="1.0.0-"+datetime.now().strftime("%Y%m%d%H%M%S")
-    assemble(ROOT/"Installer/bin/Release/net47/Text2Revit.Setup.exe",plugins,modeldir,packed,version,args.compression,args.online_release_url)
+    version="1.1.0-"+datetime.now().strftime("%Y%m%d%H%M%S")
+    assemble(ROOT/"Installer/bin/Release/net47/text2floorplan_revit.Setup.exe",plugins,modeldir,packed,version,args.compression,args.online_release_url)
 
 if __name__=="__main__": main()
