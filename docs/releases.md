@@ -4,6 +4,11 @@
 
 Repository: `Simon777hh/text2floorplan` · Release tag: **`v1.1.0`**.
 
+The two editions are independent. Users choose one set; each includes its own
+runtime and models. The browser launcher is inside the main Web ZIP, while the
+Revit edition starts from the Revit ribbon after installation. Neither requires
+an LLM or API key.
+
 ## Browser edition
 
 Upload these assets together:
@@ -38,6 +43,18 @@ if any of them changes. The new display name is **Text2Floorplan Revit**;
 legacy internal assembly, registration and installation paths are retained
 to support existing installations.
 
+## Standalone inference checkpoint
+
+For users running the source CLI or browser server, also upload:
+
+- `flow_matching_best.pth` — the 193,053,154-byte inference-only export
+- `SHA256-model.txt`
+
+These are optional downloads for source users. The complete Windows editions
+already contain the same checkpoint. Keep PTH files out of ordinary Git; do not
+upload the original 770 MB training checkpoint. Export provenance and hashes are
+in [`checkpoints/manifest.json`](../checkpoints/manifest.json).
+
 ## Source and licensing
 
 The repository root is the source checkout containing the main README. Runtime
@@ -45,6 +62,11 @@ downloads, trained weights, release binaries and generated outputs are excluded
 from ordinary Git. The complete Windows releases supply the inference models.
 Do not substitute the platform's automatic **Source code ZIP** for a prepared
 application download.
+
+Commit `infer.py`, the inference modules, tests and bilingual documentation with
+the source update. Direct PNG/JSON generation is documented in
+[the inference guide](inference.md). Source users prepare Python and models;
+the Windows application downloads already supply those dependencies.
 
 Original project material is licensed under MIT, copyright 2026 Simon H.
 Third-party notices and licenses accompany both distributions. See

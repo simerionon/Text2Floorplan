@@ -5,6 +5,16 @@
 Generate apartment layouts from text and edit the linked 2D plan and 3D model
 in your browser. The complete package includes Python, PyTorch, CLIP and the
 trained model. No Python, Conda, Revit or separate archive tool is required.
+Generation is local Flow Matching; no LLM, API key or cloud inference service
+is needed.
+
+## Choose your edition
+
+This package is the independent **browser workstation**. Its launcher is
+`Start-Text2Floorplan.cmd`, included in the main Web ZIP. You do not need
+`text2floorplan_revit-Setup.exe` or `environment.7z.*`. Those belong to the
+separate Revit plug-in, whose users download only its setup EXE. The two editions
+can coexist, but currently keep separate runtime/model copies.
 
 ## Start
 
@@ -57,6 +67,10 @@ do not type `none`. Each apartment includes one living room and one kitchen.
 **Save model** downloads an editable JSON. Unsaved edits are lost when the page
 is refreshed or closed. The JSON is compatible with the existing schema; this
 edition does not create native Revit elements or RVT files.
+
+For generation without opening the browser, prepare the runtime once and use
+`.\runtime\python.exe -B infer.py --prompt "..."` from the application folder.
+The included `docs/inference.md` explains PNG/JSON outputs and model options.
 
 ## Requirements and troubleshooting
 

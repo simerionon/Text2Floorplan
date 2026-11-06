@@ -1,8 +1,22 @@
 # Text2Floorplan v1.1.0 — Windows browser and Revit editions
 
-Generate apartment floor plans from text and edit linked 2D and 3D models locally,
-without Revit. This release includes the Python runtime, PyTorch, CLIP and the
-trained checkpoint; no environment setup is required.
+Generate editable apartment floor plans and 3D models directly from text using
+Flow Matching — **no LLM, API key or cloud inference service required**.
+The complete Windows editions include Python, PyTorch, CLIP and the trained
+checkpoint; no separate environment setup is required.
+
+## Choose your edition
+
+The browser workstation and Revit plug-in are independent. Download only the
+edition you need; they do not share a launcher or require each other's installation.
+
+| Edition | Download | Launch |
+| --- | --- | --- |
+| Browser workstation — no Revit required | Main Web ZIP + all four Web Data ZIPs | Extract the main ZIP and run its `Start-Text2Floorplan.cmd` |
+| Revit plug-in | `text2floorplan_revit-Setup.exe`; dependencies download automatically | Install, then use the Revit ribbon |
+
+Revit users do not need Web ZIPs. Browser users do not need the Revit setup EXE
+or `environment.7z.*`. Installing both currently keeps two runtime/model copies.
 
 ## Download and start
 
@@ -43,3 +57,23 @@ The native integration is now named **Text2Floorplan Revit**. Download
 removal. `SHA256-revit.txt` records its checksums. Revit 2020–2026 DLLs were rebuilt;
 existing registration identities and local data paths are retained for compatibility.
 Both browser and native Revit example images remain in the repository README.
+
+## Source inference
+
+The repository includes `infer.py`, a direct prompt-to-PNG/JSON entry that reuses
+the production backend. After preparing dependencies, CLIP and compatible weights:
+
+```powershell
+python infer.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
+```
+
+Source users can download **[flow_matching_best.pth](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/flow_matching_best.pth)**
+(193 MB) directly from this release and place it in `checkpoints/`. Its download
+checksum is in `SHA256-model.txt`. Complete Windows editions already include it;
+their users do not need this separate download. The original full training PTH
+is not distributed.
+
+The JSON opens in the browser workstation for editing. Both full and compact
+PTH files work; the compact checkpoint removes training state without quantizing
+or pruning model tensors. Source instructions are in `docs/inference.md` and
+`docs/inference.zh.md`.

@@ -2,6 +2,12 @@
 
 [中文版本](guide.zh.md)
 
+This guide covers the independent **Revit plug-in**. Its setup EXE installs only
+the plug-in and its inference environment; no Web ZIP or browser launcher is
+needed. For the standalone browser workstation, use the
+[browser guide](../web_editor/README.md). Both editions generate locally with
+CLIP and Flow Matching, without an LLM, API key or cloud inference service.
+
 ## Install and use
 
 Download `text2floorplan_revit-Setup.exe` from the Windows release, close Revit, double-click the EXE and click **Install**. The online installer automatically downloads, verifies and installs the runtime and models and registers the tool. Do not download or extract the data attachments manually. Allow at least 12 GB of free disk space. If a download is interrupted, run the installer again; validated parts are reused and partial downloads can resume. A complete offline installer performs the same installation without downloads. No separate archive utility is required.
@@ -46,7 +52,7 @@ another way to uninstall. Once removal starts, wait for it to finish.
 | Kitchen window | Height 1.2–1.5 m; sill 0.9–1.0 m |
 | Bathroom window | Height 0.6–1.2 m; sill 1.2–1.5 m |
 
-Window heights and sills are sampled in 100 mm increments, including both endpoints of each range. These dimensions are automatic; the first version exposes only the four prompt conditions. Balcony separation lines preserve room areas without enclosing the balcony with full-height walls. The project template must include a railing type, which is duplicated for the balcony.
+Window heights and sills are sampled in 100 mm increments, including both endpoints of each range. These dimensions are automatic; the Revit prompt dialog exposes only the four prompt conditions. The browser workstation additionally offers manual geometry/dimension editing; it does not edit native Revit families. Balcony separation lines preserve room areas without enclosing the balcony with full-height walls. The project template must include a railing type, which is duplicated for the balcony.
 
 Doors contain 3D leaves/jambs and plan swing arcs. Windows contain frames, glass and mullions. Dimension-specific families are generated and cached automatically using the corresponding Revit core door/window templates. A normal Revit core-content installation is required; users do not need to locate individual RFA files.
 
@@ -81,6 +87,11 @@ Everything is already under `revit` in this project. Keep the layout as supplied
 | `dist/` | Final installer and SHA256 checksum |
 
 Python source is in the repository root. The build copies only inference modules and small statistics files. `inference_runtime.py` does not load training datasets; `revit_geometry.py` defines unique walls, host IDs and physical dimensions; `backend_cli.py` writes atomic JSON/status files and retries invalid layouts up to ten attempts.
+
+To generate a PNG and editable JSON from source without launching Revit, use
+`python infer.py --prompt "..."`; see the [inference guide](../docs/inference.md).
+That JSON can be opened in the browser workstation. The current Revit ribbon
+does not provide a separate command for importing arbitrary edited JSON.
 
 ## Rebuild the installer
 

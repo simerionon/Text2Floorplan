@@ -2,9 +2,25 @@
 
 [中文](README.zh.md)
 
-**Generate apartment layouts from text, edit them in 2D and 3D, or build native Revit models.**
+**Generate editable floor plans and 3D models directly from text — locally, without an LLM or API key.**
 
 Text2Floorplan uses conditional Flow Matching to generate apartment layouts from supported English prompts. Its local browser editor connects an editable 2D plan with a 3D model. An optional C# integration, Text2Floorplan Revit, creates native Autodesk Revit elements from the generated geometry. The repository includes data preparation, training, inference and both interfaces.
+
+## Choose your edition
+
+The two Windows editions are independent. Download only the edition you need;
+neither requires the other's launcher or installation.
+
+| Edition | Download | Launch |
+| --- | --- | --- |
+| Browser workstation — no Revit required | Main Web ZIP and all four Web Data ZIPs | Extract the main ZIP, then run `Start-Text2Floorplan.cmd` inside it |
+| Revit plug-in | `text2floorplan_revit-Setup.exe` | Install, then use **Text2Floorplan → Generate Model** in Revit |
+| Source-code CLI | This repository, dependencies and compatible weights | `python infer.py --prompt "..."` |
+
+The complete Windows editions include Python, PyTorch and both models; source
+users prepare their own environment. Both editions can be installed on one PC,
+but currently keep separate runtime/model copies. Generation is local; no LLM
+provider, API subscription or cloud inference configuration is needed.
 
 ## Examples
 
@@ -38,8 +54,10 @@ The matching input and measured areas are preserved as
 
 ## What it generates
 
-- Editable 3D walls, hosted door and window families, rooms and open balcony railings.
-- Room areas and total floor area on the plan, together with a shaded 3D view.
+- Apartment geometry with walls, doors, windows, rooms and open balcony railings.
+- An editable 2D/3D document in the browser workstation; native walls, rooms and
+  hosted door/window families in the separate Revit plug-in.
+- Room and total floor areas on the plan, together with a 3D view.
 - Room-specific window heights and sill heights, sampled in 100 mm increments.
 - Geometry checks and regeneration for unsuitable layouts, including kitchens or bathrooms below 2 m².
 
@@ -124,15 +142,26 @@ The installer contains separate add-ins for **Revit 2020–2026** and registers 
 
 The locally verified environment is Windows x64 with Python 3.14 and PyTorch 2.11. Model weights are not included in the source repository. To run inference from source, provide a compatible trained checkpoint at `checkpoints/flow_matching_best.pth`, or pass its path with `--checkpoint`. Both complete Windows distributions supply the model weights automatically.
 
+For source use, download the **[193 MB inference checkpoint](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/flow_matching_best.pth)**
+and place it at `checkpoints/flow_matching_best.pth`. Its checksum is available as
+[SHA256-model.txt](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/SHA256-model.txt).
+This standalone download is optional for users of the complete Windows editions.
+
 In a Python environment, run the following from the repository root:
 
 ```powershell
 python -m pip install -r requirements.txt
 python scripts/setup_models.py
-python pipeline_generate.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
+python infer.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
 ```
 
-The setup script downloads the CLIP text encoder once. Inference loads `checkpoints/flow_matching_best.pth` and writes its JSON and preview to `outputs/`. Use `--checkpoint` and `--clip-dir` to supply alternative model paths. See [checkpoint details](checkpoints/README.md) for provenance and the checksum.
+The setup script downloads the CLIP text encoder once. `infer.py` writes a PNG
+and editable JSON to `outputs/inference/`; open the JSON in the browser workstation.
+Use `--checkpoint` and `--clip-dir` for model paths, `--device cpu` to force CPU,
+and `--output-dir` for another output folder. No Revit, browser or training dataset
+is required for CLI generation. Full and inference-only PTH files both work.
+See the [inference guide](docs/inference.md) for commands and the shared backend,
+and [checkpoint details](checkpoints/README.md) for the 770 MB versus 193 MB exports.
 
 ## Data, training and development
 
@@ -142,7 +171,8 @@ The setup script downloads the CLIP text encoder once. Inference loads `checkpoi
 | `preprocessing/features/` | Ground truth, topology, prompts, masks, edge mapping, CLIP embeddings and validation |
 | `data/` | Small statistical priors and geometry settings; see the [file guide](data/README.md) |
 | `model.py`, `train.py`, `losses.py` | Model architecture and Flow Matching training |
-| `pipeline_generate.py`, `backend_cli.py` | Inference and output generation |
+| `infer.py`, `pipeline_generate.py`, `backend_cli.py` | CLI entry, generation pipeline and shared JSON backend |
+| `inference_runtime.py`, `flow_solver.py` | Inference-only model execution and Flow Matching solver |
 | `geometry_cleanup.py`, `plan_quality.py`, `door_window_rules.py`, `revit_geometry.py` | Geometry repair, area checks, opening placement and physical dimensions |
 | `web_editor/` | Local browser UI, editable 2D/3D document, portable launcher and release builder |
 | `revit/` | Optional C# add-in, installer and Revit release builder |

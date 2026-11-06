@@ -6,6 +6,10 @@
 阳台栏杆。编辑器本身不依赖 Revit。默认英文，可在右上角切换中文；提示词
 继续使用项目支持的英文格式。
 
+这是独立的 **网页工作站**，有自己的启动器和运行环境。Revit 用户另用
+`text2floorplan_revit-Setup.exe` 安装插件，两版均不要求安装另一版。
+生成使用本地 CLIP 和 Flow Matching，无需 LLM、API Key 或云端推理服务。
+
 ## 完整 Windows 网页版
 
 发行版自带 Python、PyTorch、CLIP 和训练权重。按 [Windows 包说明](PORTABLE.zh.md)
@@ -26,8 +30,14 @@ Windows 下双击 **`web_editor/Start-Editor.cmd`**，保持打开的控制台�
 也可以在仓库根目录运行：
 
 ```powershell
+python -m pip install -r requirements.txt
+python scripts/setup_models.py
 python -m web_editor.server --open
 ```
+
+另需提供兼容的完整或精简 PTH，模型路径及 CPU 设置见
+[推理指南](../docs/inference.zh.md)。也可先通过 `python infer.py --prompt "..."`
+直接生成，再将输出 JSON 在工作站中打开。
 
 英文版：`http://127.0.0.1:8765/en`；中文版：`http://127.0.0.1:8765/zh`。
 根路径 `/` 默认英文，页内切换语言会同步修改网址并保留当前模型。也可在
@@ -120,7 +130,7 @@ n 替换为所需数量。大小只写 `small` 或 `large`；默认中户型省�
 
 ## 首版范围
 
-这是单用户本地原型，仅监听 `127.0.0.1`，尚不用于公网部署。前端全部使用
+这是单用户本地网页工作站，仅监听 `127.0.0.1`，尚不用于公网部署。前端全部使用
 本地资源，不依赖 CDN、Node.js 构建或浏览器版 PyTorch；模型推理仍在本机
 Python 后端运行，并沿用其 GPU／CPU 行为。
 

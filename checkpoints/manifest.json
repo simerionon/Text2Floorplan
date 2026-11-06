@@ -3,5 +3,13 @@
   "included_in_source_repository": false,
   "inference_weights_in_release_payload": true,
   "size": 770009261,
-  "sha256": "a2e67e9c96069847d1a0c64b61fb65536faa54c0245e56364e4aea5d98b57bdd"
+  "sha256": "a2e67e9c96069847d1a0c64b61fb65536faa54c0245e56364e4aea5d98b57bdd",
+  "inference_release": {
+    "filename": "flow_matching_best.pth",
+    "size": 193053154,
+    "sha256": "11fe79209c433ec189b1d19b8626c20ff7319b71aac79915b54e570e89a3c6cb",
+    "url": "https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/flow_matching_best.pth",
+    "checkpoint_kind": "inference-only",
+    "same_model_tensors_as_training_checkpoint": true
+  }
 }

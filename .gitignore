@@ -8,6 +8,7 @@ __pycache__/
 outputs/
 models/*
 !models/README.md
+!models/README.zh.md
 data/sources/
 data/mmap_cache/
 data/clip/

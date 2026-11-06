@@ -14,8 +14,10 @@
 | `room_aspect_ranges.json` | 几何恢复时使用的房间长宽比范围 |
 | `room_aspect_samples.npz` | 几何恢复时使用的房间长宽比样本 |
 
-安装包包含后五项推理文件；第一项用于生成训练提示词。六项都有当前调用方，
-需要保留。修改它们可能改变生成户型或训练标签。
+Revit 安装包包含后五项推理文件；网页工作站附带全部六项，但第一项只用于训练
+提示词准备。命令行直接使用仓库中的推理配置。两种 Windows 版本使用相同的
+几何配置和面积校准，都不依赖本地训练数据集。六项都有当前调用方，需要保留。
+修改它们可能改变生成户型或训练标签。
 
 推理输出的面积校准由 `geometry_policy.json` 的 `output_area_multipliers`
 控制：small=1.15、medium=1.15、large=1.20。线性尺寸乘倍率的平方根，
@@ -24,7 +26,8 @@
 因此净使用面积的增加不严格等于多边形面积倍率。
 
 面积估算口径为所有功能房间的净面积总和，含阳台、扣除墙体占地；
-最终面积以生成几何和 Revit 房间测量为准。校准与数据抽样说明见
+网页手动编辑后会根据当前墙线重新计算净面积，不继续使用旧面积标签；Revit
+原生面积以房间测量为准。校准与数据抽样说明见
 [`docs/area_scale_calibration.md`](../docs/area_scale_calibration.md)。
 
 本地准备数据时也会使用这个目录，但大文件不进入 Git：
@@ -38,4 +41,5 @@
   `mmap_cache/`：训练数据及缓存，由 `.gitignore` 排除。
 
 准备及验证方法见 [数据流程](../docs/data_pipeline.md)。模型权重放在
-[`checkpoints/`](../checkpoints/README.md)。
+[`checkpoints/`](../checkpoints/README.zh.md)。无需准备训练数据即可生成户型并
+在网页工作站打开，具体见 [推理指南](../docs/inference.zh.md)。

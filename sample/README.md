@@ -2,6 +2,14 @@
 
 [中文](README.zh.md)
 
+These examples cover both independent editions: the browser workstation and the
+Revit plug-in. In the browser, click **Import sample** for `plan.json`, or
+**Open JSON** to inspect either saved JSON. Importing a sample needs no model
+inference. Newly generated CLI JSON can be opened in the same workstation; see
+the [inference guide](../docs/inference.md). The Revit plug-in creates native
+elements through its own generation command; it does not currently offer a
+separate edited-JSON import command.
+
 The two images and `plan.json` describe the same editable apartment. The layout
 retains seed `3968430468` and now uses the current **large** physical calibration:
 **0.05466578730522668 metres per canvas unit**. Total net floor area, including

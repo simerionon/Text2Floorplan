@@ -7,6 +7,11 @@ and inspect the linked 3D walls, doors, windows and balcony railings. Revit is
 not required to use the editor. English is the default; select Chinese in the
 top-right language menu. Prompts use the same supported English format.
 
+This is the independent **browser workstation**, with its own launcher and
+runtime. Revit users instead install `text2floorplan_revit-Setup.exe`; neither
+edition requires the other. Generation uses local CLIP and Flow Matching, with
+no LLM, API key or cloud inference service.
+
 ## Complete Windows edition
 
 The release includes a self-contained browser edition with Python, PyTorch,
@@ -31,8 +36,15 @@ dependencies. The complete Windows edition above includes its own runtime.
 Alternatively, from the repository root:
 
 ```powershell
+python -m pip install -r requirements.txt
+python scripts/setup_models.py
 python -m web_editor.server --open
 ```
+
+Provide a compatible full or inference-only PTH; see the
+[inference guide](../docs/inference.md) for model paths and CPU selection.
+The same guide documents `python infer.py --prompt "..."` for generation without
+opening the workstation; its output JSON can then be opened here.
 
 The English page is `http://127.0.0.1:8765/en`; the Chinese page is
 `http://127.0.0.1:8765/zh`. `/` also opens English. The language menu changes
@@ -167,7 +179,7 @@ are written to ignored `outputs/web_editor/<job-id>/` folders.
 
 ## Current scope
 
-This is a single-user local editor prototype. It binds only to `127.0.0.1` and
+This is a single-user local browser workstation. It binds only to `127.0.0.1` and
 is not intended for public hosting. Frontend assets are local, without a CDN,
 Node.js build, or browser-side PyTorch dependency. Inference stays on the local
 Python backend and uses its existing GPU/CPU behavior.
@@ -190,11 +202,13 @@ edited-JSON import command is a separate next step.
 - `model_document.py`: atomic import/edit, shared geometry and hosted openings.
 - `enclosed_areas.py`: closed-space reconstruction, net areas and floor meshes.
 - `wall_editing.py`: separate wall translation and endpoint edits with host retention.
+- `opening_editing.py`: atomic opening transfers, orientation, dimensions and door flips.
 - `server.py`: local HTTP entry, editing requests and inference lifecycle.
 - `static/app.js`: SVG plan, selection, property editing and document history.
 - `static/plan_navigation.js`: independent plan pan/zoom and tool shortcuts.
 - `static/edit_handles.js`: shared plan, elevation and 3D edit controls.
 - `static/node_snap.js`: screen-distance node/intersection and T-junction snapping.
+- `static/opening_placement.js`: wall projection and cross-wall opening previews.
 - `static/scene.js`: local WebGL geometry, orbit camera and 3D picking.
 
 ```powershell
@@ -202,9 +216,11 @@ python tests/test_web_editor.py
 python tests/test_edit_handles.py
 python tests/test_wall_independence.py
 python tests/test_enclosed_areas.py
+python tests/test_opening_placement.py
 node --test tests/test_plan_navigation.mjs
 node --test tests/test_edit_handles.mjs
 node --test tests/test_node_snap.mjs
+node --test tests/test_opening_placement.mjs
 ```
 
 The browser front end can later be embedded in a desktop wrapper while keeping

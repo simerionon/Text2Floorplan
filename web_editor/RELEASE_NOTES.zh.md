@@ -1,7 +1,21 @@
 # Text2Floorplan v1.1.0 — Windows 网页版与 Revit 插件版
 
-从文字生成户型，在浏览器中编辑联动的二维／三维模型，无需 Revit。自带 Python、
-PyTorch、CLIP 和训练权重，无需手动配置环境。
+使用 Flow Matching 从文字直接生成可编辑户型图和三维模型，**无需 LLM、
+API Key 或云端推理服务**。完整 Windows 版自带 Python、PyTorch、CLIP 和
+训练权重，无需另外配置环境。
+
+## 选择使用版本
+
+网页工作站和 Revit 插件独立使用，只需下载需要的一套，不共用启动器，也不要求
+安装另一版本。
+
+| 版本 | 下载内容 | 启动方式 |
+| --- | --- | --- |
+| 网页工作站，无需 Revit | Web 主 ZIP 和全部四个 Web Data ZIP | 只解压主 ZIP，运行其中的 `Start-Text2Floorplan.cmd` |
+| Revit 插件 | `text2floorplan_revit-Setup.exe`，依赖由安装器自动下载 | 安装后从 Revit 工具栏启动 |
+
+插件用户不需要 Web ZIP；网页用户不需要 Revit 安装器或 `environment.7z.*`。
+两版都使用时，目前各自保留运行环境和模型副本。
 
 ## 下载与启动
 
@@ -35,3 +49,19 @@ HTML 就能独立推理。模型在用户电脑上运行。原生 Revit 集成�
 `text2floorplan_revit-Uninstall.exe`，校验文件为 `SHA256-revit.txt`。
 Revit 2020–2026 DLL 已重新编译，保留原注册身份和数据位置以兼容旧安装。
 仓库 README 同时保留网页版和 Revit 原生示例图。
+
+## 源码直接推理
+
+仓库新增 `infer.py`，直接输入 prompt 生成 PNG／JSON，复用正式后端。
+准备好依赖、CLIP 和兼容权重后运行：
+
+```powershell
+python infer.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
+```
+
+源码用户可直接下载本 Release 的 **[flow_matching_best.pth](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/flow_matching_best.pth)**
+（193 MB）到 `checkpoints/`，校验值见 `SHA256-model.txt`。完整 Windows 版本
+已附带该权重，用户无需重复下载。原始完整训练 PTH 不分发。
+
+JSON 可在网页工作站打开并编辑。完整和精简 PTH 均可使用；精简版去掉训练状态，
+不量化、不剪枝。源码用法见 `docs/inference.md` 和 `docs/inference.zh.md`。

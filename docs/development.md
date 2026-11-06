@@ -1,5 +1,17 @@
 # Development and release packaging
 
+## Shared inference and independent interfaces
+
+`infer.py`, the browser workstation and the Revit add-in use the same production
+`backend_cli.py`. Source CLI usage, model paths and PNG/JSON outputs are documented
+in [English](inference.md) and [Chinese](inference.zh.md). This path does not import
+the trainer or require generated training tensors, an LLM or an external API.
+
+The Windows browser workstation and Revit plug-in have independent launchers and
+runtime/model copies. Users select one edition; installing the other is optional.
+The browser preserves editable JSON and renders 2D/3D geometry. Native Revit
+families and RVT project content are created only through the Revit API.
+
 ## Windows browser edition
 
 Use a prepared Windows x64 Conda environment with `requirements.txt` installed.
@@ -81,8 +93,8 @@ python revit/build_release.py --uninstaller-only
 This writes `revit/dist/text2floorplan_revit-Uninstall.exe` and updates its entry in
 `SHA256-revit.txt`. Full release builds include this tool too.
 
-The builder compiles Revit 2020–2026 plugins, exports the author's checkpoint
-without optimizer state, copies the CLIP text encoder, packs Python/PyTorch,
+The builder compiles Revit 2020–2026 plugins, exports the production model and
+architecture arguments without EMA/optimizer/training state, copies the CLIP text encoder, packs Python/PyTorch,
 assembles `revit/dist/text2floorplan_revit-Setup.exe` and verifies its appended payload hash.
 Runtime/build caches are reusable. It also writes `SHA256-revit.txt`.
 
@@ -143,10 +155,15 @@ The source repository excludes model weights, generated datasets, downloaded
 CLIP files, build caches and installer outputs through `.gitignore`. Source
 inference and release builds require a separately supplied compatible checkpoint.
 
-The full training checkpoint is kept locally. The builder removes optimizer
-state and bundles only inference weights and architecture arguments, together
-with the CLIP encoder, in the installer. End users do not download weights
-separately. Git LFS is not required for the source repository.
+The full training checkpoint is kept locally. The builder removes the EMA copy,
+optimizer and other training state and bundles only the production `model` and
+architecture arguments with the CLIP encoder. The original 770,009,261-byte PTH
+and the 193,053,154-byte export have identical production model tensors; no
+quantization or pruning is applied. Both formats work with source inference,
+but only the full checkpoint retains the optimizer/EMA state used to resume training. Complete Windows
+editions supply the compact PTH automatically. Git LFS is not required for the
+source repository. Weight and dataset permissions must be reviewed separately
+from the source-code license; see [checkpoint details](../checkpoints/README.md).
 
 The complete LZMA2 offline installer is approximately 2.44 GiB, compared with
 3.63 GiB for the earlier ZIP build. The online setup executable is approximately

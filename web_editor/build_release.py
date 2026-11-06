@@ -26,6 +26,9 @@ WEB_FILES = ("__init__.py", "server.py", "model_document.py", "enclosed_areas.py
              "PORTABLE.md", "PORTABLE.zh.md")
 STATIC_FILES = ("index.html", "app.js", "scene.js", "styles.css", "edit_handles.js",
                 "node_snap.js", "plan_navigation.js", "opening_placement.js")
+CLI_FILES = ("infer.py", "requirements.txt", "scripts/setup_models.py",
+             "docs/inference.md", "docs/inference.zh.md", "checkpoints/README.md",
+             "checkpoints/README.zh.md", "checkpoints/manifest.json")
 
 
 def digest(path):
@@ -41,7 +44,7 @@ def safe_name(name):
 
 
 def application_files():
-    files = {name: ROOT / name for name in (*BACKEND_FILES, "LICENSE", "THIRD_PARTY_NOTICES.md")}
+    files = {name: ROOT / name for name in (*BACKEND_FILES, *CLI_FILES, "LICENSE", "THIRD_PARTY_NOTICES.md")}
     files.update({"data/" + name: ROOT / "data" / name for name in DATA_FILES})
     files.update({"web_editor/" + name: ROOT / "web_editor" / name for name in WEB_FILES})
     files.update({"web_editor/static/" + name: ROOT / "web_editor/static" / name for name in STATIC_FILES})

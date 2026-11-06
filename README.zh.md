@@ -2,9 +2,24 @@
 
 [English](README.md)
 
-**从文字生成户型，在二维／三维中编辑，也可创建原生 Revit 模型。**
+**从文字直接生成可编辑户型图和三维模型，本地运行，无需 LLM 或 API Key。**
 
 Text2Floorplan 使用条件 Flow Matching 模型，根据支持的英文提示词生成户型。本地网页编辑器提供二维平面与三维模型联动；可选的 Text2Floorplan Revit C# 插件通过 Revit API 创建原生建筑构件。仓库包含数据预处理、训练、推理和两种使用界面。
+
+## 选择使用版本
+
+两种 Windows 版本独立使用，只需下载需要的一套，彼此不共用启动器，也不要求
+安装另一版本。
+
+| 版本 | 下载内容 | 启动方式 |
+| --- | --- | --- |
+| 网页工作站，无需 Revit | Web 主 ZIP 和全部四个 Web Data ZIP | 只解压主 ZIP，双击其中的 `Start-Text2Floorplan.cmd` |
+| Revit 插件 | `text2floorplan_revit-Setup.exe` | 安装后在 Revit 中点击 **Text2Floorplan → Generate Model** |
+| 源码命令行 | 本仓库、依赖和兼容权重 | `python infer.py --prompt "..."` |
+
+完整 Windows 包自带 Python、PyTorch 和模型；源码用户需自行准备环境。两版可在
+同一电脑同时使用，但目前各自保留运行环境及模型副本。推理在本地完成，无需配置
+LLM 服务、API 订阅或云端推理。
 
 ## 示例
 
@@ -36,8 +51,9 @@ A large 3-bedroom apartment with 2 bathrooms and 2 balconies.
 
 ## 生成内容
 
-- 可编辑的三维墙体、真实门窗族、房间和开放阳台栏杆。
-- 平面图中的各房间面积、总面积，以及着色三维视图。
+- 包含墙体、门窗、房间和开放阳台栏杆的户型几何。
+- 网页工作站中的可编辑二维／三维文档；独立 Revit 插件中的原生墙体、房间和真实门窗族。
+- 平面图中的各房间及总面积，以及三维视图。
 - 按房间类型设置的窗高和窗台高，以 100 mm 为步长采样。
 - 几何检查及不合格户型重新生成，包括厨房或卫生间面积小于 2 m² 的情况。
 
@@ -113,15 +129,24 @@ A large 4-bedroom apartment with 2 bathrooms and 2 balconies.
 
 本地已验证的环境为 Windows x64、Python 3.14 和 PyTorch 2.11。源码仓库不包含模型权重。从源码推理需自行提供兼容的训练权重，放在 `checkpoints/flow_matching_best.pth`，或通过 `--checkpoint` 指定路径。两个完整 Windows 发行版均自动提供使用所需的模型权重。
 
+源码用户可直接下载 **[193 MB 精简推理权重](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/flow_matching_best.pth)**，
+放到 `checkpoints/flow_matching_best.pth`，校验值见
+[SHA256-model.txt](https://github.com/Simon777hh/Text2Floorplan/releases/download/v1.1.0/SHA256-model.txt)。
+完整 Windows 版本的用户不需要额外下载这份 PTH。
+
 在 Python 环境中，从仓库根目录运行以下命令：
 
 ```powershell
 python -m pip install -r requirements.txt
 python scripts/setup_models.py
-python pipeline_generate.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
+python infer.py --prompt "A 3-bedroom apartment with 2 bathrooms and 1 balcony."
 ```
 
-初始化脚本首次下载 CLIP 文本编码器。推理读取 `checkpoints/flow_matching_best.pth`，将 JSON 和预览图写入 `outputs/`。可通过 `--checkpoint` 和 `--clip-dir` 指定其他模型路径。权重来源及校验值见 [权重说明](checkpoints/README.md)。
+初始化脚本首次下载 CLIP 文本编码器。`infer.py` 将 PNG 和可编辑 JSON 写入
+`outputs/inference/`，JSON 可在网页工作站中打开。使用 `--checkpoint` 和 `--clip-dir`
+指定模型路径，`--device cpu` 强制 CPU，`--output-dir` 修改输出位置。命令行生成
+无需 Revit、浏览器或训练数据集，完整及精简 PTH 均可使用。运行方法与共用后端见
+[推理指南](docs/inference.zh.md)，770 MB／193 MB 的差异见 [权重说明](checkpoints/README.zh.md)。
 
 ## 数据、训练与开发
 
@@ -131,7 +156,8 @@ python pipeline_generate.py --prompt "A 3-bedroom apartment with 2 bathrooms and
 | `preprocessing/features/` | GT、拓扑、提示词、mask、边映射、CLIP 特征及验证 |
 | `data/` | 小型统计先验和几何配置，见 [文件说明](data/README.zh.md) |
 | `model.py`、`train.py`、`losses.py` | 模型结构与 Flow Matching 训练 |
-| `pipeline_generate.py`、`backend_cli.py` | 推理与结果输出 |
+| `infer.py`、`pipeline_generate.py`、`backend_cli.py` | 命令行入口、生成管线和共用 JSON 后端 |
+| `inference_runtime.py`、`flow_solver.py` | 独立推理执行与 Flow Matching 求解 |
 | `geometry_cleanup.py`、`plan_quality.py`、`door_window_rules.py`、`revit_geometry.py` | 几何修复、面积检查、门窗布置和构件尺寸 |
 | `web_editor/` | 本地网页、二维／三维模型编辑、便携启动器和打包程序 |
 | `revit/` | 可选 C# 插件、安装器和 Revit 发行版构建程序 |

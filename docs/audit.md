@@ -8,6 +8,40 @@ RPLAN and feature pipeline consolidation: 2026-10-03.
 Local browser editor verification: 2026-10-19.
 Windows release refresh and MIT licensing: 2026-10-23.
 
+## Inference entry and documentation review — 2026-10-26
+
+- The complete production inference code was already tracked in the source
+  repository: `pipeline_generate.py`, `backend_cli.py`, `inference_runtime.py`,
+  `flow_solver.py` and their model/geometry dependencies. The separate `raster/`
+  FM/DDPM research track and historical archived pipelines were inspected and
+  were not copied into the production repository.
+- Added `infer.py`, a direct prompt-to-PNG/editable-JSON entry using the existing
+  production backend. It supports full/compact PTHs, explicit CLIP paths,
+  automatic GPU/CPU selection and forced CPU. Request files are temporary;
+  generated output remains ignored by Git. English and Chinese inference guides
+  describe the same backend used by the browser workstation and Revit plug-in.
+- Compared the actual release checkpoint with the supplied training PTH. All
+  345 production `model` tensors and their dtypes match exactly, as do retained
+  architecture arguments. The training file is 770,009,261 bytes; its export is
+  193,053,154 bytes. Removal of the EMA copy and optimizer/training state explains
+  the difference; no model quantization or pruning was performed.
+- Reviewed every current public README: root, browser workstation, sample, data,
+  models and checkpoints, in both languages. Updated the release notes,
+  portable/Revit guides, development notes and workspace index. The independent
+  launchers, local inference without LLM/API keys, source versus bundled setup,
+  browser editing and native Revit scope are now explicit. The two pairs of
+  browser/Revit example images remain in both root README files. Historical
+  archive documentation retains its original context.
+- Corrected the older blanket statement assigning the source-code license to
+  weights without reviewing training-data permissions. Source-code licensing
+  and dataset/weight distribution permissions are documented separately.
+- Four new CLI entry checks passed. Real generation with the compact release PTH
+  produced a PNG and application-schema JSON from a working directory outside
+  the source repository, using the same production backend and local CLIP model.
+  Generation also passed with the original full PTH on CPU and a minimal Windows
+  PATH. The resulting JSON imports into the browser workstation. All 112 Python
+  regression checks passed after the changes.
+
 ## Windows release refresh — 2026-10-23
 
 - Repository/browser branding is Text2Floorplan; the native integration is
@@ -209,7 +243,7 @@ images use local editor geometry; native Revit measurements for this scale
 have not been rerun. Detailed
 logs and generated RVT/build products are local assets, excluded from Git.
 
-The current Windows online installer is version `1.0.0-20261002233122`,
+The historical October 2 Windows online installer was version `1.0.0-20261002233122`,
 3,573,261 bytes (3.41 MiB). Its data attachments are 1,610,612,736 and
 1,001,222,741 bytes (1.50 and 0.93 GiB). The earlier complete ZIP installer was
 3.63 GiB; a complete LZMA2 comparison build was 2.44 GiB. Neither complete
@@ -217,8 +251,9 @@ installer fits GitHub's 2 GiB per-asset limit. The online release uses tag
 `v1.0.0`; its attachment names and configured download URLs must agree.
 macOS and Linux installers are outside the first release's scope.
 
-The former native sample total was 106.2 m², with 28 wall segments; those
-original assets are preserved locally. The public sample now uses the current
+The former native sample total was 106.2 m², with 28 wall segments; its
+original images/JSON are now also retained as the public `sample/revit-*` pair.
+The browser sample uses the current
 large scale and measures 128.888219 m² net, with the same layout and seed. Prepared
 training data, downloaded CLIP and build caches were physically moved to the
 parent workspace's `_local_assets/` directory. The active sample RVT and loaded

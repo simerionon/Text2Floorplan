@@ -1,5 +1,10 @@
 # Current data pipeline
 
+This is the training-data preparation pipeline, not a prerequisite for using the
+browser workstation, Revit plug-in or direct CLI. Generation uses local model
+weights, a CLIP text encoder and the small committed priors/settings. To generate
+without raw datasets, GT or cached masks, see [inference](inference.md).
+
 ## Source preparation
 
 Obtain ResPlan and RPLAN separately under their own terms. Place local inputs in

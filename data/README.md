@@ -15,8 +15,11 @@ plans, training tensors or model weights.
 | `room_aspect_ranges.json` | Room aspect-ratio ranges used during geometry recovery | `restore_canvas_aspect.py` |
 | `room_aspect_samples.npz` | Room aspect-ratio samples used during geometry recovery | `restore_canvas_aspect.py` |
 
-The installer bundles the five inference files; the area quantile file is used
-for training prompt preparation. All six have current callers and are retained.
+The Revit installer bundles the five inference files. The browser workstation
+bundles all six, although the area quantile file is used only for training prompt
+preparation. The direct CLI uses the committed inference files in place. Both
+Windows editions use the same geometry settings and area calibration; neither
+requires the local training datasets. All six have current callers and are retained.
 Changing these files can change generated layouts or training labels.
 
 Deployment polygon-area multipliers are small=1.15, medium=1.15 and large=1.20.
@@ -35,4 +38,6 @@ Local preparation uses the same directory:
   `mmap_cache/`: local training data and caches, excluded from Git.
 
 See the [data pipeline](../docs/data_pipeline.md) for preparation and validation.
-Weights belong in [`checkpoints/`](../checkpoints/README.md).
+Source weights belong in [`checkpoints/`](../checkpoints/README.md).
+See the [inference guide](../docs/inference.md) to generate a plan and open it in
+the browser workstation without preparing training data.

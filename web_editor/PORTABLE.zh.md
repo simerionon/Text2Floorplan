@@ -4,6 +4,14 @@
 
 从文字生成户型，在浏览器里编辑联动的二维平面和三维模型。完整包自带 Python、
 PyTorch、CLIP 和训练权重，无需另外安装 Python、Conda、Revit 或解压软件。
+生成使用本地 Flow Matching，无需 LLM、API Key 或云端推理服务。
+
+## 选择使用版本
+
+本包是独立 **网页工作站**，启动器 `Start-Text2Floorplan.cmd` 已放在 Web 主 ZIP
+中。无需下载安装 `text2floorplan_revit-Setup.exe` 或 `environment.7z.*`，这些
+属于独立的 Revit 插件；只用插件的用户只需下载其安装 EXE。两版可同时使用，
+但目前各自保留运行环境和模型副本。
 
 ## 启动
 
@@ -45,6 +53,10 @@ A large 4-bedroom apartment with 2 bathrooms and 2 balconies.
 
 刷新或关闭网页前请先 **保存模型**，未保存的编辑不会自动保留。该版本输出
 可编辑 JSON 和预览，不直接创建 Revit 构件或 RVT 文件。
+
+不打开网页也可生成：首次准备好运行环境后，在程序目录运行
+`.\runtime\python.exe -B infer.py --prompt "..."`。随包的 `docs/inference.zh.md`
+介绍 PNG／JSON 输出和模型选项。
 
 ## 要求与排查
 

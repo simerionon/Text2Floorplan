@@ -2,6 +2,10 @@
 
 [English](guide.md)
 
+本说明对应独立 **Revit 插件版**。安装 EXE 只安装插件及其推理环境，不需要
+Web ZIP 或网页启动器。独立网页工作站见 [网页说明](../web_editor/README.zh.md)。
+两版都使用本地 CLIP 和 Flow Matching，无需 LLM、API Key 或云端推理服务。
+
 ## 给用户
 
 关闭 Revit，双击 `text2floorplan_revit-Setup.exe`，点击安装。
@@ -78,7 +82,7 @@ Python 推理代码在仓库根目录，打包时自动复制所需模块及小�
 
 在现有开发电脑双击 `Build-Release.cmd`。
 首次构建需要网络，用于下载编译 SDK、各年 API 引用和打包工具。
-用户安装和推理不需要下载模型。
+用户无需手动下载模型；在线安装器会自动下载，安装完成后的推理可离线运行。
 如果更换训练权重，可运行：
 
 ```powershell
@@ -92,6 +96,11 @@ python build_release.py --checkpoint "你的模型路径"
 基本族模板属于正常 Revit 安装的核心内容；发行版无需用户自行寻找门窗 RFA。
 门族包含三维门扇/门框及平面开启弧线，窗族包含窗框、玻璃和中梃。
 房间名称按所选界面语言标记；已有墙时，新户型自动放到右侧，避免重复生成重叠。
+
+需要不启动 Revit、直接从文字生成 PNG 和可编辑 JSON 时，使用
+`python infer.py --prompt "..."`，见 [推理指南](../docs/inference.zh.md)。
+JSON 可在网页工作站编辑，当前 Revit 工具栏尚无单独导入编辑后 JSON 的命令。
+网页工作站可手动修改几何及尺寸；插件提示词窗口仍只提供大小及房间数量条件。
 
 ## 自动安装位置
 
