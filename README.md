@@ -194,7 +194,7 @@ CLIP embeddings, then validates their alignment.
 
 ## License
 
-Copyright (c) 2026 Simon H.
+Copyright (c) 2026 HUANG Daoan.
 
 Original project material is released under the [MIT License](LICENSE). You may use, modify, distribute and use it commercially, provided the copyright and license notice are retained. Third-party components, pretrained model components and separately obtained datasets remain subject to their own terms.
 
